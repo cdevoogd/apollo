@@ -1,0 +1,43 @@
+# PYTHON
+
+__pycache__/
+*.py[cod]
+*$py.class
+pip-log.txt
+pip-delete-this-directory.txt
+
+.ropeproject
+
+# JAVASCRIPT
+node_modules
+
+# VS CODE / IDEs
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+.idea
+
+# WINDOWS
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+*.lnk
+
+# MACOS
+.DS_Store
+
+# Misc
+config

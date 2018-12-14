@@ -1,0 +1,22 @@
+{
+  "name": "apollo",
+  "version": "1.0.0",
+  "description": "A personalized bot for Discord.",
+  "main": "./src/apollo.js",
+  "scripts": {
+    "start": "node './src/apollo.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cdevoogd/apollo.git"
+  },
+  "author": "cdevoogd",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/cdevoogd/apollo/issues"
+  },
+  "homepage": "https://github.com/cdevoogd/apollo#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2"
+  }
+}

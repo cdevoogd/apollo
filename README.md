@@ -14,7 +14,6 @@ The files should follow this format:
 
 ```javascript
 // config.js
-
 module.exports = {
   config: {
     // Discord bot token (https://discordapp.com/developers/applications/)
