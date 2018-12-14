@@ -4,6 +4,20 @@ A personalized Discord bot.
 
 Currently, Apollo is a bot that needs to be self hosted to run on your server.
 
+## Installation
+
+First, you need to clone the repo.
+
+```shell
+git clone https://github.com/cdevoogd/apollo.git
+```
+
+Next, install the npm dependencies for Apollo.
+
+```shell
+npm install
+```
+
 ## Config
 
 To start, create a config folder inside of the `src` directory.
@@ -57,3 +71,7 @@ module.exports = {
   }
 };
 ```
+
+## Starting Apollo
+
+After everything is setup, you can run `npm start` to run Apollo.
