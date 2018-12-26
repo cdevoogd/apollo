@@ -22,7 +22,6 @@ try {
     throw e;
   }
 }
-console.log(process);
 // Discord Events
 client.on('ready', () => {
   eventReady.run(client);
