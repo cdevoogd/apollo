@@ -15,6 +15,9 @@
   "bugs": {
     "url": "https://github.com/cdevoogd/apollo/issues"
   },
+  "engines": {
+    "node": "10.11.0"
+  },
   "homepage": "https://github.com/cdevoogd/apollo#readme",
   "dependencies": {
     "discord.js": "^11.4.2",
