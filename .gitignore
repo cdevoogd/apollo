@@ -39,5 +39,5 @@ $RECYCLE.BIN/
 # MACOS
 .DS_Store
 
-# Misc
-config
+# Environment Variables
+.env*

@@ -1,3 +1,5 @@
+// Import Environment Variables (.env)
+require('dotenv').config();
 // Discord.JS
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -20,6 +22,7 @@ try {
     throw e;
   }
 }
+console.log(process);
 // Discord Events
 client.on('ready', () => {
   eventReady.run(client);
@@ -33,4 +36,4 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   eventVoiceStatusUpdate.run(db, oldMember, newMember);
 });
 
-client.login(db.config.token);
+client.login(process.env.ACCESS_TOKEN);

@@ -1,6 +1,6 @@
 // Runs custom chat commands set in the commands config.
 function run(db, commands, msg, word) {
-  const prefix = db.config.prefix;
+  const prefix = db.prefix;
   let prefixPresent = false;
 
 
