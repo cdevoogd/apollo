@@ -1,1 +1,1 @@
-worker: node './src/apollo.js'
+worker: npm start
