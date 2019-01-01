@@ -4,7 +4,6 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client();
 // Event Handlers
-const eventError = require('./events/error');
 const eventReady = require('./events/ready');
 const eventMessage = require('./events/message');
 const eventVoiceStatusUpdate = require('./events/voiceStateUpdate');
@@ -17,12 +16,13 @@ try {
   commands = require('./config/commands');
 } catch (e) {
   if (e.code === 'MODULE_NOT_FOUND') {
-    eventError.throwConfigError(e);
+    console.log('\x1b[37m\x1b[41m', `ERROR: Required config file not found. View the README for information on how to setup configuration files for the bot. (${e.code})`);
+    process.exit();
   } else {
     throw e;
   }
 }
-// Discord Events
+// SECTION Discord Events
 client.on('ready', () => {
   eventReady.run(client);
 });

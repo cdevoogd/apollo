@@ -1,3 +1,13 @@
+/*
+ * Event - Voice State Update (Run whens user leaves/joins a channel or mutes/unmutes)
+ *
+ * Currently, this event is used to manipulate dynamic channels that are nested under the dynamic 
+ * category IDs listed in the ../config/config.js file.
+ * 
+ * User joins channel: If there are no more empty channels, one will be created.
+ * User leaves channel: If there are more than one empty channels, all but one will be deleted.
+ */
+
 function run(db, userOld, userNew) {
   // Store the voice channel changes.
   const channelBefore = userOld.voiceChannel;

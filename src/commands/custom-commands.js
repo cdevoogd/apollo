@@ -1,19 +1,19 @@
 // Runs custom chat commands set in the commands config.
-function run(db, commands, msg, word) {
+module.exports.exec = (db, commands, msg, word) => {
   const prefix = db.prefix;
   let prefixPresent = false;
 
 
   // Check for required parameters to run the command.
   function checkCustomParameters() {
-    if (prefixPresent === commands[word].reqPrefix || commands[word].reqPrefix === false) {
+    if (prefixPresent === commands[word].reqPrefix || commands[word].requiresPrefix === false) {
       return true;
     } 
     return false;
   }
 
   function replyToCommand() {
-    if (commands[word].mention) {
+    if (commands[word].mentionUser) {
       msg.reply(commands[word].reply);
     } else {
       msg.channel.send(commands[word].reply);
@@ -29,8 +29,4 @@ function run(db, commands, msg, word) {
   if (checkCustomParameters()) {
     replyToCommand();
   }
-}
-
-module.exports = {
-  run
 };

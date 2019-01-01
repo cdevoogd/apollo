@@ -1,21 +1,35 @@
-function run(db, commands, client, msg) {
-  const customCommands = require('../commands/customCommands');
-  const content = msg.content.split(' ');
+/*
+ * Event - Message (Runs when a content is sent)
+ * 
+ * This event checks for:
+ * Custom chat commands (Defined in ../config/commands.js)
+ * 
+ */
+
+module.exports.run = (db, commands, client, message) => {
+  const content = message.content.split(' ');
+  // Commands
+  const customCommands = require('../commands/custom-commands');
+  const ping = require('../commands/ping');
 
   // Stop the bot from replying to itself
-  if (msg.author === client.user) {
+  if (message.author === client.user) {
     return;
   }
+
+
+  // SECTION Check for built in commands
+  switch(message) {
+    case '!ping':
+      ping.exec(client, message);
+  }
   
-  // Checks through every word for a custom command.
+  // SECTION Check for custom chat commands.
   for (let word of content) {
-    // Check if a word matches with a command, even if it has a prefix.
+    // Check for custom chat commands, prefix or not.
     if (Object.keys(commands).includes(word) || Object.keys(commands).includes(word.slice(1))) {
-      customCommands.run(db, commands, msg, word);
+      customCommands.exec(db, commands, message, word);
     }
   }
-}
-
-module.exports = {
-  run
 };
+
