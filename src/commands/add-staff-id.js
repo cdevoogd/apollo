@@ -12,7 +12,7 @@ module.exports.exec = (message) => {
       title: '!addstaffid',
       fields: [{
         name: 'Description',
-        value: 'Allows the addition of the IDs of staff roles to be added to the database for use with other commands, such as !addcommand.'
+        value: `Allows the addition of the IDs of staff roles to be added to the database for use with other commands, such as !addcommand. To get a role ID, you can type "\\\\@<role-name>", and copy the numbers it gives.`
       },
       {
         name: 'Permissions',
