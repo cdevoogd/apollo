@@ -1,42 +1,38 @@
-const models = require('../database/models');
-
+/**
+ * !addstaffid
+ * @module ./commands/addstaffid
+ * @description Allows the server owner to add the role ID of a staff role to the database for use in other commands.
+ */
+const models = require('../../database/models');
+const helpEmbeds = require('../helpers/help-embeds');
 const StaffIDModel = models.StaffIDModel;
+
 module.exports.exec = (message) => {
   const messageContent = message.content.split(' ');
   const idToAdd = messageContent[1];
 
   if (idToAdd === undefined) {
     // If there is no arguments, print a help message and stop from executing
-    message.channel.send({embed: {
-      color: 1752220,
-      title: '!addstaffid',
-      fields: [{
-        name: 'Description',
-        value: `Allows the addition of the IDs of staff roles to be added to the database for use with other commands, such as !addcommand. To get a role ID, you can type "\\\\@<role-name>", and copy the numbers it gives.`
-      },
-      {
-        name: 'Permissions',
-        value: 'Only available to the server owner.'
-      },
-      {
-        name: 'Usage',
-        value: '!addstaffid <staff-id-here>'
-      }]
-    }});
+    message.channel.send({embed: helpEmbeds.addstaffid});
     return;
   }
 
   // Only allow the server owner to use this command
   if (message.author.id === message.guild.ownerID) {
-    // Search for the Staff document
-    StaffIDModel.findOne().exec()
-      .then(doc => {
-        if (doc === null) {
-          writeNewStaffDocument();
-        } else {
-          updateStaffDocument(doc);
-        }
-      });
+    // Check that role is valid.
+    if (message.guild.roles.has(idToAdd)) {
+      // Search for the Staff document
+      StaffIDModel.findOne().exec()
+        .then(doc => {
+          if (doc === null) {
+            writeNewStaffDocument();
+          } else {
+            updateStaffDocument(doc);
+          }
+        });
+    } else {
+      message.channel.send(`${idToAdd} is not a valid role ID for this server. Please check your ID and try again.`);
+    }
   }
 
 

@@ -2,7 +2,7 @@
  * Event - Ready (Runs when the bot is completely initialized)
  * 
  * Currently, this event is used to set the activity of the bot and print 
- * initalization info to the console.
+ * initialization info to the console.
  */
 
 function run(client) {

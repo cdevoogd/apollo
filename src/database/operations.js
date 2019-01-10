@@ -1,19 +1,17 @@
 /**
- * @module Database
- * @description Manages the DB connection and operations.
+ * @module Operations
+ * @description Manages the mongo connection and operations.
  */
 
 require('dotenv').config();
 const mongoose = require('mongoose');
-
-// SECTION Connetion + CRUD Functions
+const models = require('./models');
 
 /**
  * @function connect
  * @description Connects to MongoDB using environment variables.
  * @returns {undefined}
  */
-
 module.exports.connect = () => {
   const dbUser = process.env.MONGO_USER;
   const dbPass = process.env.MONGO_PASS;
@@ -30,4 +28,31 @@ module.exports.connect = () => {
     });
 };
 
+/**
+ * @function getCommands
+ * @description Retrieves all of the commands in the 'commands' database collection and returns them for use later.
+ * @returns {Promise} 
+ */
+module.exports.getCommands = async () => {
+  let output = [];
+  const result = await models.CommandModel.find().exec();
+  for (let obj of result) {
+    output.push(obj.command);
+  }
+  return output;
+};
 
+/**
+ * @function getDynamicInfo
+ * @description Queries and sorts the dynamics collection into an object structured (categoryID: channelName) and returns the promise.
+ * @returns {Promise}
+ */
+module.exports.getDynamicInfo = async () => {
+  let output = {};
+  const result = await models.DynamicCategoryModel.find().exec();
+  for (let obj of result) {
+    // Creates an object as {categoryID: channelName} for easy reference
+    output[obj.categoryID] = obj.channelName;
+  }
+  return output;
+};

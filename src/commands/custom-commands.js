@@ -1,32 +1,18 @@
-// Runs custom chat commands set in the commands config.
-module.exports.exec = (db, commands, msg, word) => {
-  const prefix = db.prefix;
-  let prefixPresent = false;
+const models = require('../database/models');
 
-
-  // Check for required parameters to run the command.
-  function checkCustomParameters() {
-    if (prefixPresent === commands[word].reqPrefix || commands[word].requiresPrefix === false) {
-      return true;
-    } 
-    return false;
-  }
-
-  function replyToCommand() {
-    if (commands[word].mentionUser) {
-      msg.reply(commands[word].reply);
-    } else {
-      msg.channel.send(commands[word].reply);
-    }
-  }
-
-
-  if (word.startsWith(prefix)) {
-    // Remove the prefix for use in referencing the command's parameters
-    word = word.slice(1);
-    prefixPresent = true;
-  }
-  if (checkCustomParameters()) {
-    replyToCommand();
-  }
+module.exports.exec = (msg, word) => {
+  // Find the document for this command
+  models.CommandModel.findOne({command: word})
+    .exec()
+    .then((doc) => {
+      const props = doc.properties;
+      if (props.mentionUser) {
+        // If mentionUser = true, reply with a mention
+        msg.reply(props.reply);
+      } else {
+        // Else, send a regular message back
+        msg.channel.send(props.reply);
+      }
+    })
+    .catch(err => console.error(err));
 };

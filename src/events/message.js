@@ -6,12 +6,11 @@
  * 
  */
 
-module.exports.run = (db, commands, client, message) => {
+module.exports.run = (config, commands, client, message) => {
   const messageContent = message.content.split(' ');
+  const pre = config.prefix;
   // Commands
-  const ping = require('../commands/ping');
-  const addCommand = require('../commands/add-command');
-  const addStaffID = require('../commands/add-staff-id');
+  const addStaffID = require('../commands/staff/addstaffid');
   const customCommands = require('../commands/custom-commands');
   
 
@@ -20,23 +19,20 @@ module.exports.run = (db, commands, client, message) => {
     return;
   }
 
-
-  // SECTION Check for built in commands
   switch(messageContent[0].toLowerCase()) {
-    case '!addcommand':
-      addCommand.exec(message);
-      break;
-    case '!addstaffid':
+    case pre + 'addstaffid':
       addStaffID.exec(message);
       break;
-  }
-  
-  // SECTION Check for custom chat commands.
-  for (let word of messageContent) {
-    // Check for custom chat commands, prefix or not.
-    if (Object.keys(commands).includes(word) || Object.keys(commands).includes(word.slice(1))) {
-      customCommands.exec(db, commands, message, word);
-    }
+    default:
+      // Check for custom commands. Put in default so they dont run if they happen to overlap with another command.
+      for (let word of messageContent) {
+        // Check for custom chat commands, prefix or not.
+        commands.then((commandList => {
+          if (commandList.includes(word)) {
+            customCommands.exec(message, word);
+          }
+        }));
+      }
   }
 };
 
