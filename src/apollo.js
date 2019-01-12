@@ -12,7 +12,9 @@ const config = require('./config');
 // Database
 const mongo = require('./database/operations');
 
+// Connect to the database
 mongo.connect();
+// Cache the commands and dynamic channel information from the database
 let commands = mongo.getCommands();
 let dynamicInfo = mongo.getDynamicInfo();
 
@@ -21,11 +23,11 @@ client.on('ready', () => {
 });
 
 client.on('message', (msg) => {
-  eventMessage.run(config, commands, client, msg);
+  eventMessage.run(config, commands, dynamicInfo, client, msg);
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  eventVoiceStatusUpdate.run(dynamicInfo, oldMember, newMember);
+  eventVoiceStatusUpdate.run(config, dynamicInfo, oldMember, newMember);
 });
 
 client.login(process.env.ACCESS_TOKEN);
