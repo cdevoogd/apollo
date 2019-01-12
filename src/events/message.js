@@ -10,7 +10,6 @@ module.exports.run = (config, commands, dynamicInfo, client, message) => {
   const messageContent = message.content.split(' ');
   const pre = config.prefix;
   // Built-In Commands
-  const addStaffID = require('../commands/staff/addstaffid');
   const lock = require('../commands/general/lock');
   const unlock = require('../commands/general/unlock');
   // Custom Commands
@@ -25,9 +24,6 @@ module.exports.run = (config, commands, dynamicInfo, client, message) => {
   // Only run in text channels, not DMs
   if (message.channel.type === 'text') {
     switch (messageContent[0].toLowerCase()) {
-      case pre + 'addstaffid':
-        addStaffID.exec(message);
-        break;
       case pre + 'lock':
         lock.exec(config, dynamicInfo, message);
         break;
