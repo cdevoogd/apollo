@@ -6,11 +6,14 @@
  * 
  */
 
-module.exports.run = (config, commands, client, message) => {
+module.exports.run = (config, commands, dynamicInfo, client, message) => {
   const messageContent = message.content.split(' ');
   const pre = config.prefix;
-  // Commands
+  // Built-In Commands
   const addStaffID = require('../commands/staff/addstaffid');
+  const lock = require('../commands/general/lock');
+  const unlock = require('../commands/general/unlock');
+  // Custom Commands
   const customCommands = require('../commands/custom-commands');
   
 
@@ -19,20 +22,30 @@ module.exports.run = (config, commands, client, message) => {
     return;
   }
 
-  switch(messageContent[0].toLowerCase()) {
-    case pre + 'addstaffid':
-      addStaffID.exec(message);
-      break;
-    default:
-      // Check for custom commands. Put in default so they dont run if they happen to overlap with another command.
-      for (let word of messageContent) {
-        // Check for custom chat commands, prefix or not.
-        commands.then((commandList => {
-          if (commandList.includes(word)) {
-            customCommands.exec(message, word);
-          }
-        }));
-      }
+  // Only run in text channels, not DMs
+  if (message.channel.type === 'text') {
+    switch (messageContent[0].toLowerCase()) {
+      case pre + 'addstaffid':
+        addStaffID.exec(message);
+        break;
+      case pre + 'lock':
+        lock.exec(config, dynamicInfo, message);
+        break;
+      case pre + 'unlock':
+        unlock.exec(config, dynamicInfo, message);
+        break;
+      default:
+        // Checking for custom commands
+        for (let word of messageContent) {
+          commands.then((commandList => {
+            if (commandList.includes(word)) {
+              customCommands.exec(message, word);
+            }
+          }));
+        }
+    }
   }
+
+  
 };
 
