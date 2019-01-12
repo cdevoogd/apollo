@@ -27,7 +27,7 @@ client.on('message', (msg) => {
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  eventVoiceStatusUpdate.run(dynamicInfo, oldMember, newMember);
+  eventVoiceStatusUpdate.run(config, dynamicInfo, oldMember, newMember);
 });
 
 client.login(process.env.ACCESS_TOKEN);

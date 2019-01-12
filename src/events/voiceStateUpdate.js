@@ -6,7 +6,7 @@
  * channel open.
  */
 
-module.exports.run = (dynamicInfo, userOld, userNew) => {
+module.exports.run = (config, dynamicInfo, userOld, userNew) => {
   const channelBefore = userOld.voiceChannel;
   const channelAfter = userNew.voiceChannel;
   const roleEveryone = userNew.guild.defaultRole;
@@ -46,7 +46,7 @@ module.exports.run = (dynamicInfo, userOld, userNew) => {
 
   /**
    * @function isDynamicChannel
-   * @description Checks the VoiceChannel's parent ID against the list of dynamic category IDs
+   * Checks the VoiceChannel's parent ID against the list of dynamic category IDs
    * @param {VoiceChannel} channel
    * @returns {Boolean}
    */
@@ -57,7 +57,6 @@ module.exports.run = (dynamicInfo, userOld, userNew) => {
   /**
    * @function isNthChannelMember
    * Checks if the user is the Nth member of the provided voice channel.
-   * 
    * @param {VoiceChannel} channel 
    * @param {Integer} n 
    * @returns {undefined}
@@ -74,7 +73,6 @@ module.exports.run = (dynamicInfo, userOld, userNew) => {
    * @function manageExtraChannels
    * Loops through the channels in the guild to make sure that there is at least one empty dynamic channel. 
    * If there is more than one empty channel, it will be deleted.
-   * 
    * @param {GuildMember} guildMember 
    * @returns {Integer}
    */
@@ -90,19 +88,46 @@ module.exports.run = (dynamicInfo, userOld, userNew) => {
           // If at least one empty dynamic channel has already been found, delete the extras
           channel.delete();
         } else {
+          // Check if the empty extra channel is locked, and if so unlock it.
+          if (isChannelLocked(channel)) {
+            unlockChannel(channel);
+          }
           // Set that there is at least one empty dynamic channel
           extraChannels = 1;
         }
       }
     }
+
     return extraChannels;
+
+    /**
+     * @function isChannelLocked
+     * Checks if the extra voice channel is locked by checking if the everyone role has the CONNECT permission.
+     * @param {VoiceChannel} currentChannel 
+     * @returns {Boolean}
+     */
+    function isChannelLocked(currentChannel) {
+      // Checks if @everyone is able to connect to the channel. If not, it must be locked.
+      const permissions = currentChannel.permissionsFor(roleEveryone).toArray();
+      return !permissions.includes('CONNECT');
+    }
+
+    /**
+     * @function unlockChannel
+     * Unlocks the voice channel by setting the locked/overwritten permissions to default.
+     * @param {VoiceChannel} currentChannel 
+     * @returns {undefined}
+     */
+    function unlockChannel(currentChannel) {
+      currentChannel.overwritePermissions(roleEveryone, { CONNECT: null });
+      currentChannel.overwritePermissions(config.adminRoleID, { CONNECT: null });
+    }
   }
 
   /**
    * @async
    * @function createDynamicChannel
    * Creates a new dynamic channel under the current category.
-   * 
    * @param {GuildMember} guildMember 
    * @param {Integer} extraChannels 
    * @param {String} currentCat 
