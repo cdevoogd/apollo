@@ -1,60 +1,68 @@
-/*
- * Event - Voice State Update (Run whens user leaves/joins a channel or mutes/unmutes)
- *
- * Currently, this event is used to manipulate dynamic channels that are nested under the dynamic 
- * category IDs listed in the ../config/config.js file.
+/**
+ * Event Handler - Voice State Update
  * 
- * User joins channel: If there are no more empty channels, one will be created.
- * User leaves channel: If there are more than one empty channels, all but one will be deleted.
+ * This event manages the dynamic channel functionality. When a use joins a channel inside of a category marked as dynamic, the bot will
+ * create a new channel, making sure that there is always one open channel in the category. The bot will also delete channels to keep only one
+ * channel open.
  */
 
-function run(dynamicInfo, userOld, userNew) {
-  // Store the voice channel changes.
+module.exports.run = (dynamicInfo, userOld, userNew) => {
   const channelBefore = userOld.voiceChannel;
   const channelAfter = userNew.voiceChannel;
-  // Role IDs - Used to hide channel during creation and create tailored
-  // permissions for GenX.
   const roleEveryone = userNew.guild.defaultRole;
+  
   let dynamicCategories;
   let dynamicObj;
   let currentCategory;
-  let extraChannelCount = 0;
+  let extraChannelCount;
+
   // Using then() because dynamicInfo is a promise.
   dynamicInfo.then((obj) => {
     dynamicCategories = Object.keys(obj);
     dynamicObj = obj;
-    // Runs when channelAfter is a valid channel 
-    // (i.e. When a user joined or switched to a different voice channel)
+
+    // Runs when a user joins a channel
     if (channelAfter && isDynamicChannel(channelAfter)) {
       currentCategory = channelAfter.parentID;  
-      // Checks if the user is the first user to join the channel, unlocking the
-      // creation of a new channel
+
+      // Checks if the user is the first person to join the channel.
       if (isNthChannelMember(channelAfter, 1)) {
-        manageExtraChannels(userNew);
-        createDynamicChannel(userNew, currentCategory);
+        extraChannelCount = manageExtraChannels(userNew);
+        createDynamicChannel(userNew, extraChannelCount, currentCategory);
       }
     }
 
-    // Runs when channelBefore is a valid channel
-    // (i.e. When a user leaves a channel [Disconnects, switches to a different one])
+    // Runs when a user leaves a channel
     if (channelBefore && isDynamicChannel(channelBefore)) {
       currentCategory = channelBefore.parentID;
-      // Checks if the channel that the user left is now empty, allowing the channel
-      // to be deleted.
+      
+      // Checks if the user was the last person in the channel, making it now empty.
       if (isNthChannelMember(channelBefore, 0)) {
-        manageExtraChannels(userOld);
-        createDynamicChannel(userOld, currentCategory);
+        extraChannelCount = manageExtraChannels(userOld);
+        createDynamicChannel(userOld, extraChannelCount, currentCategory);
       }
     }
   });
 
+  /**
+   * @function isDynamicChannel
+   * @description Checks the VoiceChannel's parent ID against the list of dynamic category IDs
+   * @param {VoiceChannel} channel
+   * @returns {Boolean}
+   */
   function isDynamicChannel(channel) {
     return dynamicCategories.includes(channel.parentID);
   }
 
+  /**
+   * @function isNthChannelMember
+   * Checks if the user is the Nth member of the provided voice channel.
+   * 
+   * @param {VoiceChannel} channel 
+   * @param {Integer} n 
+   * @returns {undefined}
+   */
   function isNthChannelMember(channel, n) {
-    // Checks if the user is the Nth member of the channel
-    // 1st for channelAfter, or if there is 0 left for channelBefore
     if (channel.members.array().length === n) {
       return true;
     } else {
@@ -62,46 +70,57 @@ function run(dynamicInfo, userOld, userNew) {
     }
   }
 
+  /**
+   * @function manageExtraChannels
+   * Loops through the channels in the guild to make sure that there is at least one empty dynamic channel. 
+   * If there is more than one empty channel, it will be deleted.
+   * 
+   * @param {GuildMember} guildMember 
+   * @returns {Integer}
+   */
   function manageExtraChannels(guildMember) {
     // Manages the extra dynamic channels in the server. 
     // Checks if there is at least one empty, extra channel. Channels after that will be deleted.
     let channels = guildMember.guild.channels.array();
+    let extraChannels = 0;
     for (let channel of channels) {
       // Check if the channel is dynamic, a voice channel, and is empty
       if (channel.parentID === currentCategory && channel.type === 'voice' && channel.members.array().length === 0) {
-        if (extraChannelCount === 1) {
+        if (extraChannels === 1) {
           // If at least one empty dynamic channel has already been found, delete the extras
           channel.delete();
         } else {
           // Set that there is at least one empty dynamic channel
-          extraChannelCount = 1;
+          extraChannels = 1;
         }
       }
     }
+    return extraChannels;
   }
 
-  async function createDynamicChannel(guildMember, currentCat) {
+  /**
+   * @async
+   * @function createDynamicChannel
+   * Creates a new dynamic channel under the current category.
+   * 
+   * @param {GuildMember} guildMember 
+   * @param {Integer} extraChannels 
+   * @param {String} currentCat 
+   */
+  async function createDynamicChannel(guildMember, extraChannels, currentCat) {
     // Using currentCat as a parameter to keep it from placing channels in the wrong category when running quickly.
     // Permissions on channel creation to hide channel before it is moved
     const creationPermissions = [{
       id: roleEveryone, denied: ['VIEW_CHANNEL']
     }];
 
-    if (extraChannelCount === 0) {
-      await guildMember.guild.createChannel(
-        dynamicObj[currentCat],
-        'voice',
-        creationPermissions
-      )
+    if (extraChannels === 0) {
+      await guildMember.guild.createChannel(dynamicObj[currentCat], 'voice', creationPermissions)
         // Move the channel to the current dynamic category
         .then(channel => channel.setParent(currentCat))
-        // Allow it to be viewed by the member role and above.
+        // Allow it to be viewed again
         .then(channel => channel.overwritePermissions(roleEveryone, {VIEW_CHANNEL: true}))
         .catch(console.error);
     }
   }
-}
-
-module.exports = {
-  run
 };
