@@ -41,3 +41,6 @@ $RECYCLE.BIN/
 
 # Environment Variables
 .env
+
+config.js
+src/config.js
