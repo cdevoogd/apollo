@@ -1,6 +1,6 @@
 /**
- * Command - !addcommand
- * Allows staff to add custom commands to the database.
+ * Command - !delcommand
+ * Allows staff to edit the replies of already created commands.
  */
 
 const apollo = require('../../apollo');
@@ -11,9 +11,9 @@ const CommandModel = models.CommandModel;
 module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');
   const commandName = messageContent[1];
-  
+
   const replySlice = messageContent.slice(2);
-  const commandReply = replySlice.join(' ');
+  const commandEditedReply = replySlice.join(' ');
 
   const memberRoleIDs = message.member.roles.keyArray();
   const staffRoleIDs = config.staffRoleIDs;
@@ -31,11 +31,11 @@ module.exports.exec = (config, message) => {
   if (!memberIsStaff) return;
   // If there are no arguments, print a help message and return.
   if (commandName === undefined) {
-    message.channel.send({embed: helpEmbeds.addcommand});
+    message.channel.send({ embed: helpEmbeds.editcommand });
     return;
   }
 
-  if (commandReply === '') {
+  if (commandEditedReply === '') {
     message.channel.send('Argument <reply> missing.');
     return;
   }
@@ -43,34 +43,30 @@ module.exports.exec = (config, message) => {
   CommandModel.findOne({ command: commandName }).exec()
     .then(doc => {
       if (doc === null) {
-        writeCommandDocument();
-        
-      } else {
-        message.channel.send(`Command ${commandName} already exists.`);
+        message.channel.send(`Could not find command ${commandName}.`);
         return;
+      } else {
+        updateCommandDocument(doc);
       }
     })
     .catch(err => console.error(err));
-    
-    
+
+
   /**
-   * @function writeCommandDocument
-   * Writes the custom command configuration to the database.
+   * @function updateCommandDocument
+   * Updates the custom command configuration in the database.
    * @returns {undefined}
    */
-  function writeCommandDocument() {
-    // Create a model to create the document with
-    const newCommand = new CommandModel({
-      command: commandName,
-      reply: commandReply
-    });
-
-    newCommand.save()
+  function updateCommandDocument(commandDoc) {
+    // Replace the old reply with the new version.
+    commandDoc.reply = commandEditedReply;
+    // Update the document.
+    commandDoc.save()
       .then(doc => {
-        console.log(`New command (${commandName}) added. [Document ID: ${doc._id}])`);
-        // Cache the new command
+        console.log(`Command (${commandName}) edited. [Document ID: ${doc._id}])`);
+        // Cache the updated command
         apollo.cacheCommands();
-        message.channel.send(`Command ${commandName} added!`);
+        message.channel.send(`Command ${commandName} edited!`);
       })
       .catch(err => console.error(err));
   }
