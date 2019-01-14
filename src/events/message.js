@@ -13,6 +13,8 @@ module.exports.run = (config, commands, dynamicInfo, client, message) => {
   const lock = require('../commands/general/lock');
   const unlock = require('../commands/general/unlock');
   const addcommand = require('../commands/staff/addcommand');
+  const editcommand = require('../commands/staff/editcommand');
+  const delcommand = require('../commands/staff/delcommand');
   // Custom Commands
   const customCommands = require('../commands/custom-commands');
   
@@ -33,6 +35,12 @@ module.exports.run = (config, commands, dynamicInfo, client, message) => {
         break;
       case pre + 'addcommand':
         addcommand.exec(config, message);
+        break;
+      case pre + 'editcommand':
+        editcommand.exec(config, message);
+        break;
+      case pre + 'delcommand':
+        delcommand.exec(config, message);
         break;
       default:
         // Checking for custom commands
