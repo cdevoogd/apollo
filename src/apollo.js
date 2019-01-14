@@ -15,9 +15,16 @@ const mongo = require('./database/operations');
 // Connect to the database
 mongo.connect();
 // Cache the commands and dynamic channel information from the database
-let commands = mongo.getCommands();
-let dynamicInfo = mongo.getDynamicInfo();
+let commands; 
+let dynamicInfo;
 
+module.exports.cacheCommands = () => { commands = mongo.getCommands(); };
+module.exports.cacheDynamicInfo = () => { dynamicInfo = mongo.getDynamicInfo(); };
+
+exports.cacheCommands();
+exports.cacheDynamicInfo();
+
+// Discord Events
 client.on('ready', () => {
   eventReady.run(client);
 });
