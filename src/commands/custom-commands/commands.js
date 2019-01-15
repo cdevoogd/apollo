@@ -2,15 +2,16 @@
  * Command - !commands
  * DMs the user a list of commands in the server.
  */
-module.exports.exec = async (commands, message) => {
-  const commandsObj = await commands;
-  const commandArray = Object.keys(commandsObj);
+module.exports.exec = async (standardCommands, customCommands, message) => {
+  const customCommandsObj = await customCommands;
+  const commandArray = Object.keys(customCommandsObj);
   
-  let output = commandArray.join('\n');
+  let standardCmdOutput = 'Built-In Commands:\n' + standardCommands.join('\n');
+  let customCmdOutput = '\n\nCustom Commands:\n' + commandArray.join('\n');
 
   message.member.createDM()
     .then(dmChannel => {
-      dmChannel.send('```\n' + output + '\n```');
+      dmChannel.send('```\n' + standardCmdOutput + customCmdOutput + '\n```');
     })
     .catch(err => console.error(err));
 };
