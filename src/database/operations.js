@@ -34,10 +34,10 @@ module.exports.connect = () => {
  * @returns {Promise} 
  */
 module.exports.getCommands = async () => {
-  let output = [];
+  let output = {};
   const result = await models.CommandModel.find().exec();
   for (let obj of result) {
-    output.push(obj.command);
+    output[obj.command] = obj.reply;
   }
   return output;
 };
