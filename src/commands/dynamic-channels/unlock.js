@@ -15,6 +15,7 @@ module.exports.exec = async (config, dynamicInfo, message) => {
       // Reset the permissions that are overwritten when locked.
       currentVC.overwritePermissions(message.guild.defaultRole, { CONNECT: null });
       currentVC.overwritePermissions(config.adminRoleID, { CONNECT: null });
+      message.react('✅');
     }
   }
 };
