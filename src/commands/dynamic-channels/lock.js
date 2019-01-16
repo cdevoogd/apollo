@@ -14,6 +14,7 @@ module.exports.exec = async (config, dynamicInfo, message) => {
     if (currentVC && dyanmicCategories.includes(currentVC.parentID)) {
       currentVC.overwritePermissions(message.guild.defaultRole, { CONNECT: false });
       currentVC.overwritePermissions(config.adminRoleID, { CONNECT: true });
+      message.react('✅');
     }
   }
   
