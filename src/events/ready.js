@@ -6,6 +6,9 @@
  */
 
 function run(client) {
+  const currentTime = new Date();
+  console.log('----------------------------------------------');
+  console.log('Start Time: ' + currentTime.toUTCString());
   console.log(`Bot ready and logged in as ${client.user.tag}!`);
   // Set bot status
   client.user
