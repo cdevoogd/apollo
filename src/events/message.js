@@ -9,7 +9,7 @@
 module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
   const messageContent = message.content.split(' ');
   const msgCommand = messageContent[0].toLowerCase();
-  const msgCommandMinusPrefix = msgCommand.slice(1);
+  let msgCommandMinusPrefix;
   // Built-In Commands
   const lock = require('../commands/dynamic-channels/lock');
   const unlock = require('../commands/dynamic-channels/unlock');
@@ -17,6 +17,8 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
   const addcommand = require('../commands/custom-commands/addcommand');
   const editcommand = require('../commands/custom-commands/editcommand');
   const delcommand = require('../commands/custom-commands/delcommand');
+  const adddynamic = require('../commands/dynamic-channels/adddynamic');
+  const deldynamic = require('../commands/dynamic-channels/deldynamic');
 
   const commandDictionary = {
     'lock': () => lock.exec(config, dynamicInfo, message),
@@ -24,7 +26,9 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
     'commands': () => commands.exec(Object.keys(commandDictionary), customCommands, message),
     'addcommand': () => addcommand.exec(config, message),
     'editcommand': () => editcommand.exec(config, message),
-    'delcommand': () => delcommand.exec(config, message)
+    'delcommand': () => delcommand.exec(config, message),
+    'adddynamic': () => adddynamic.exec(config, message),
+    'deldynamic': () => deldynamic.exec(config, message)
   };
 
   async function checkCustomCommands() {
@@ -41,6 +45,8 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
   if (message.author === client.user) return;
   // Only run in text channels, not DMs
   if (message.channel.type !== 'text') return;
+  // Check for prefix, and set variable if it is there.
+  if (msgCommand.startsWith(config.prefix)) msgCommandMinusPrefix = msgCommand.slice(1);
   // If the command is in the dictionary, run it, else, check for custom commands.
   commandDictionary.hasOwnProperty(msgCommandMinusPrefix) ? 
     commandDictionary[msgCommandMinusPrefix]() : checkCustomCommands();
