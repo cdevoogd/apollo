@@ -1,34 +1,15 @@
-const colors = {
-  DEFAULT: 0,
-  AQUA: 1752220,
-  GREEN: 3066993,
-  BLUE: 3447003,
-  PURPLE: 10181046,
-  GOLD: 15844367,
-  ORANGE: 15105570,
-  RED: 15158332,
-  GREY: 9807270,
-  DARKER_GREY: 8359053,
-  NAVY: 3426654,
-  DARK_AQUA: 1146986,
-  DARK_GREEN: 2067276,
-  DARK_BLUE: 2123412,
-  DARK_PURPLE: 7419530,
-  DARK_GOLD: 12745742,
-  DARK_ORANGE: 11027200,
-  DARK_RED: 10038562,
-  DARK_GREY: 9936031,
-  LIGHT_GREY: 12370112,
-  DARK_NAVY: 2899536
-};
+const config = require('../../config');
+const embedColors = require('./embed-colors');
+const pre = config.prefix;
 
 module.exports = {
+  // SECTION Custom Command Commands
   addcommand: {
-    color: colors.AQUA,
-    title: '!addcommand',
+    color: embedColors.aqua,
+    title: pre + 'addcommand',
     fields: [{
       name: 'Usage',
-      value: '!addcommand <command> <reply>'
+      value: pre + 'addcommand <command> <reply>'
     },
     {
       name: 'Permissions',
@@ -36,15 +17,15 @@ module.exports = {
     },
     {
       name: 'Description',
-      value: `Allows staff to add chat commands with custom replies.`
+      value: 'Allows staff to add chat commands with custom replies.'
     }]
   },
   editcommand: {
-    color: colors.AQUA,
-    title: '!editcommand',
+    color: embedColors.aqua,
+    title: pre + 'editcommand',
     fields: [{
       name: 'Usage',
-      value: '!editcommand <command> <reply>'
+      value: pre + 'editcommand <command> <reply>'
     },
     {
       name: 'Permissions',
@@ -52,15 +33,15 @@ module.exports = {
     },
     {
       name: 'Description',
-      value: `Allows staff to edit the replies of already created commands.`
+      value: 'Allows staff to edit the replies of already created commands.'
     }]
   },
   delcommand: {
-    color: colors.AQUA,
-    title: '!delcommand',
+    color: embedColors.aqua,
+    title: pre + 'delcommand',
     fields: [{
       name: 'Usage',
-      value: '!delcommand <command>'
+      value: pre + 'delcommand <command>'
     },
     {
       name: 'Permissions',
@@ -68,15 +49,16 @@ module.exports = {
     },
     {
       name: 'Description',
-      value: `Allows staff to delete custom commands from the database.`
+      value: 'Allows staff to delete custom commands from the database.'
     }]
   },
+  // SECTION Dynamic Channel Commands
   adddynamic: {
-    color: colors.ORANGE,
-    title: '!adddynamic',
+    color: embedColors.orange,
+    title: pre + 'adddynamic',
     fields: [{
       name: 'Usage',
-      value: '!adddynamic <category-id> <voice-channel-name>'
+      value: pre + 'adddynamic <category-id> <voice-channel-name>'
     },
     {
       name: 'Permissions',
@@ -84,15 +66,15 @@ module.exports = {
     },
     {
       name: 'Description',
-      value: `Allows admins to add dynamic channel configurations directly to the database.`
+      value: 'Allows admins to add dynamic channel configurations directly to the database.'
     }]
   },
   deldynamic: {
-    color: colors.ORANGE,
-    title: '!deldynamic',
+    color: embedColors.orange,
+    title: pre + 'deldynamic',
     fields: [{
       name: 'Usage',
-      value: '!deldynamic <category-id>'
+      value: pre + 'deldynamic <category-id>'
     },
     {
       name: 'Permissions',
@@ -100,7 +82,56 @@ module.exports = {
     },
     {
       name: 'Description',
-      value: `Allows admins to delete dynamic channel configurations from the database.`
+      value: 'Allows admins to delete dynamic channel configurations from the database.'
+    }]
+  },
+  // SECTION Moderation Commands
+  ban: {
+    color: embedColors.gold,
+    title: pre + 'ban',
+    fields: [{
+      name: 'Usage',
+      value: pre + 'ban <@user-OR-userID> <reason>'
+    },
+    {
+      name: 'Permissions',
+      value: `Available to ${config.commands.ban.accessLevel}`
+    },
+    {
+      name: 'Description',
+      value: 'Allows staff members to ban users from the server.'
+    }]
+  },
+  kick: {
+    color: embedColors.gold,
+    title: pre + 'kick',
+    fields: [{
+      name: 'Usage',
+      value: pre + 'kick <@user-OR-userID> <reason>'
+    },
+    {
+      name: 'Permissions',
+      value: `Available to ${config.commands.kick.accessLevel}`
+    },
+    {
+      name: 'Description',
+      value: 'Allows staff members to kick users from the server.'
+    }]
+  },
+  mute: {
+    color: embedColors.gold,
+    title: pre + 'mute',
+    fields: [{
+      name: 'Usage',
+      value: pre + 'mute <@user-OR-userID> <time[minutes][0=perm]> <reason>'
+    },
+    {
+      name: 'Permissions',
+      value: `Available to ${config.commands.kick.accessLevel}`
+    },
+    {
+      name: 'Description',
+      value: 'Allows staff members to mute users in the server.'
     }]
   }
   

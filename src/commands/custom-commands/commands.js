@@ -10,8 +10,6 @@ module.exports.exec = async (standardCommands, customCommands, message) => {
   let customCmdOutput = '\n\nCustom Commands:\n' + commandArray.join('\n');
 
   message.member.createDM()
-    .then(dmChannel => {
-      dmChannel.send('```\n' + standardCmdOutput + customCmdOutput + '\n```');
-    })
+    .then(dmChannel => dmChannel.send('```\n' + standardCmdOutput + customCmdOutput + '\n```') )
     .catch(err => console.error(err));
 };

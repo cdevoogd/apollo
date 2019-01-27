@@ -4,6 +4,7 @@
  */
 
 const apollo = require('../../apollo');
+const staffChecks = require('../helpers/staffChecks');
 const models = require('../../database/models');
 const helpEmbeds = require('../helpers/help-embeds');
 const CommandModel = models.CommandModel;
@@ -12,17 +13,7 @@ module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');
   const commandName = messageContent[1];
 
-  const memberRoleIDs = message.member.roles.keyArray();
-  const staffRoleIDs = config.staffRoleIDs;
-  let memberIsStaff = false;
-
-  // Loop through the member's IDs and check if they have a staff role.
-  for (let id of memberRoleIDs) {
-    if (staffRoleIDs.includes(id)) {
-      memberIsStaff = true;
-      break;
-    }
-  }
+  const memberIsStaff = staffChecks.isMemberStaff(config, message.member);
 
   // If they are not staff, return and stop execution.
   if (!memberIsStaff) return;

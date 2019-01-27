@@ -4,6 +4,7 @@
  */
 
 const apollo = require('../../apollo');
+const staffChecks = require('../helpers/staffChecks');
 const models = require('../../database/models');
 const helpEmbeds = require('../helpers/help-embeds');
 const DynamicCategoryModel = models.DynamicCategoryModel;
@@ -12,16 +13,7 @@ module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');
   const dynamicCategoryID = messageContent[1];
 
-  const memberRoleIDs = message.member.roles.keyArray();
-  let memberIsAdmin = false;
-
-  // Loop through the member's IDs and check if they have the admin role ID.
-  for (let id of memberRoleIDs) {
-    if (id === config.adminRoleID) {
-      memberIsAdmin = true;
-      break;
-    }
-  }
+  const memberIsAdmin = staffChecks.isMemberAdmin(config, message.member);
 
   // If they are not an admin, return and stop execution.
   if (!memberIsAdmin) return;
