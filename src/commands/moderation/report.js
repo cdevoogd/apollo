@@ -37,7 +37,7 @@ module.exports.exec = async (config, message) => {
       if (content.toLowerCase() === 'cancel') { msg.channel.send('Report Cancelled.'); return; }
       reportedUser = content;
     })
-    .catch(() => { dm.send(`Report expired (No response after ${options.time / 1000} seconds).`); return; });
+    .catch(() => { dm.send(`Report expired (No response after ${options.user.time / 1000} seconds).`); return; });
   // If it still undefined, stop execution
   if (reportedUser === undefined) return;
 
@@ -50,7 +50,7 @@ module.exports.exec = async (config, message) => {
       if (content.toLowerCase() === 'cancel') { msg.channel.send('Report Cancelled.'); return; }
       reportReason = content;
     })
-    .catch(() => { dm.send(`Report expired (No response after ${options.time / 1000} seconds).`); return; });
+    .catch(() => { dm.send(`Report expired (No response after ${options.reason.time / 1000} seconds).`); return; });
   // If it still undefined, stop execution
   if (reportReason === undefined) return;
   
