@@ -6,14 +6,12 @@
 const apollo = require('../../apollo');
 const staffChecks = require('../helpers/staffChecks');
 const embeds = require('../helpers/help-embeds');
-
 const models = require('../../database/models');
 const CommandModel = models.CommandModel;
 
 module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');
   const commandName = messageContent[1];
-
   const memberIsStaff = staffChecks.isMemberStaff(config, message.member);
 
   // If they are not staff, return and stop execution.

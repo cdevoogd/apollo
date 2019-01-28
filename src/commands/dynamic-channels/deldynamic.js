@@ -6,14 +6,12 @@
 const apollo = require('../../apollo');
 const staffChecks = require('../helpers/staffChecks');
 const embeds = require('../helpers/help-embeds');
-
 const models = require('../../database/models');
 const DynamicCategoryModel = models.DynamicCategoryModel;
 
 module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');
   const dynamicCategoryID = messageContent[1];
-
   const memberIsAdmin = staffChecks.isMemberAdmin(config, message.member);
 
   // If they are not an admin, return and stop execution.

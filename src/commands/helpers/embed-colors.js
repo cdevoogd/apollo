@@ -3,10 +3,11 @@ module.exports = {
   customCommands: '#02B388',
   dynamic: '#AE02B3',
   moderation: '#E7DA0B',
-  // Moderation Logging Colors
+  // Logging Colors
   ban: '#C80000',
   kick: '#E4851F',
   report: '#EEA514',
   mute: '#EEDD14',
-  unmute: '#53EE14'
+  unmute: '#53EE14',
+  messageDeleted: 'AC14EE'
 };

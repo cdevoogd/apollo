@@ -8,14 +8,6 @@ module.exports.exec = async (config, dynamicInfo, message) => {
   const dyanmicInfoResolved = await dynamicInfo;
   const dyanmicCategories = Object.keys(dyanmicInfoResolved);
 
-  if (config.commands.lock.commandChannelOnly) {
-    if (message.channel.name === config.botCommandsChannel) {
-      lockChannel();
-    }
-    return;
-  }
-  lockChannel();
-
   function lockChannel() {
     if (currentVC && dyanmicCategories.includes(currentVC.parentID)) {
       currentVC.overwritePermissions(message.guild.defaultRole, { CONNECT: false });
@@ -23,4 +15,12 @@ module.exports.exec = async (config, dynamicInfo, message) => {
       message.react('🔒');
     }
   }
+
+  if (config.commands.lock.commandChannelOnly) {
+    if (message.channel.name === config.botCommandsChannel) {
+      lockChannel();
+    }
+    return;
+  }
+  lockChannel();
 };

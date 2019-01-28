@@ -8,14 +8,6 @@ module.exports.exec = async (config, dynamicInfo, message) => {
   const dyanmicInfoResolved = await dynamicInfo;
   const dyanmicCategories = Object.keys(dyanmicInfoResolved);
 
-  if (config.commands.unlock.commandChannelOnly) {
-    if (message.channel.name === config.botCommandsChannel) {
-      unlockChannel();
-    }
-    return;
-  }
-  unlockChannel();
-
   function unlockChannel() {
     if (currentVC && dyanmicCategories.includes(currentVC.parentID)) {
       // Reset the permissions that are overwritten when locked.
@@ -24,4 +16,12 @@ module.exports.exec = async (config, dynamicInfo, message) => {
       message.react('🔓');
     }
   }
+
+  if (config.commands.unlock.commandChannelOnly) {
+    if (message.channel.name === config.botCommandsChannel) {
+      unlockChannel();
+    }
+    return;
+  }
+  unlockChannel();
 };

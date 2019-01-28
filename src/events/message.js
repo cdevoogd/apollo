@@ -46,12 +46,15 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
     
   };
 
+  function runCommand(command) {
+    if (config.commands[command].enabled) commandDictionary[command]();
+  }
+
   async function checkCustomCommands() {
-    const commandObj = await customCommands;
-    const commandList = Object.keys(commandObj);
+    const commands = await customCommands;
     for (let word of messageContent) {
-      if (commandList.includes(word)) {
-        message.channel.send(commandObj[word]);
+      if (commands.hasOwnProperty(word)) {
+        message.channel.send(commands[word]);
       }
     }
   }
@@ -65,8 +68,6 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
   // If the command is in the dictionary, run it, else, check for custom commands.
   (commandDictionary.hasOwnProperty(msgCommandMinusPrefix)) ? runCommand(msgCommandMinusPrefix) : checkCustomCommands();
    
-  function runCommand(command) {
-    if (config.commands[command].enabled) commandDictionary[command]();
-  }
+  
 };
 

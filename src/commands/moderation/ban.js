@@ -11,7 +11,6 @@ module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');
   const banUser = message.mentions.users.first() || message.guild.members.get(messageContent[1]);
   const banReason = messageContent.slice(2).join(' ');
-
   const accessLevel = config.commands.ban.accessLevel;
   const memberIsEligible = staffChecks.checkAvailibilityUsingAccessLevel(config, accessLevel, message.member);
 
