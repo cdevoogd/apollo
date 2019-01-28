@@ -1,22 +1,12 @@
 module.exports = {
-  default: 0,
-  aqua: 1752220,
-  darkAqua: 1146986,
-  green: 3066993,
-  darkGreen: 2067276,
-  blue: 3447003,
-  darkBlue: 2123412,
-  purple: 10181046,
-  darkPurple: 7419530,
-  gold: 15844367,
-  darkGold: 12745742,
-  orange: 15105570,
-  darkOrange: 11027200,
-  red: 15158332,
-  darkRed: 10038562,
-  gray: 9807270,
-  darkGrey: 9936031,
-  lightGrey: 12370112,
-  navy: 3426654,
-  darkNavy: 2899536
+  // Colors for help embeds
+  customCommands: '#02B388',
+  dynamic: '#AE02B3',
+  moderation: '#E7DA0B',
+  // Moderation Logging Colors
+  ban: '#C80000',
+  kick: '#E4851F',
+  report: '#EEA514',
+  mute: '#EEDD14',
+  unmute: '#53EE14'
 };

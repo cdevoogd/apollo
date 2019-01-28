@@ -3,7 +3,8 @@
  * Allows users to submit reports on users for staff to view
  */
 
-const embedColors = require('../helpers/embed-colors');
+const Discord = require('discord.js');
+const colors = require('../helpers/embed-colors');
 const moderationLogs = require('../helpers/log-moderation');
 
 module.exports.exec = async (config, message) => {
@@ -70,31 +71,18 @@ module.exports.exec = async (config, message) => {
 
   if (reportReason === undefined) return;
   // SECTION Logging
-  moderationLogs.logReport(config, message, reportedUser, reportReason);
+  moderationLogs.logReport(message, reportedUser, reportReason);
   sendResponseLog(dm);
 
   function sendResponseLog(dmChannel) {
-    dmChannel.send({
-      embed: {
-        color: embedColors.blue,
-        title: 'Report Submitted',
-        fields: [{
-          name: 'Member',
-          value: `${reportedUser}`
-        },
-        {
-          name: 'Reason',
-          value: `${reportReason}`
-        },
-        {
-          name: 'Reportee',
-          value: `${message.author}`
-        },
-        {
-          name: 'Time Stamp',
-          value: `${message.createdAt}`
-        }]
-      }
-    });
+    const reportEmbed = new Discord.RichEmbed()
+      .setColor(colors.report)
+      .setTitle('Report')
+      .addField('Member', reportedUser)
+      .addField('Reason', reportReason)
+      .addField('Reportee', message.author)
+      .addField('Time Stamp', message.createdAt);
+    
+    dmChannel.send({ embed: reportEmbed });
   }
 };

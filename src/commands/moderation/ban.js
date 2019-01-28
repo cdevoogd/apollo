@@ -3,7 +3,7 @@
  * Allows staff to ban users from the server.
  */
 
-const helpEmbeds = require('../helpers/help-embeds');
+const embeds = require('../helpers/help-embeds');
 const moderationLogs = require('../helpers/log-moderation');
 const staffChecks = require('../helpers/staffChecks');
 
@@ -18,7 +18,7 @@ module.exports.exec = (config, message) => {
   if (!memberIsEligible) return;
   // If there are no arguments, print a help message and return.
   if (messageContent[1] === undefined) {
-    message.channel.send({ embed: helpEmbeds.ban });
+    message.channel.send({ embed: embeds.ban });
     return;
   }
   // Checks for invalid parameters
@@ -46,7 +46,7 @@ module.exports.exec = (config, message) => {
         guildMember.ban(banReason)
           .then(() => {
             message.react('✅');
-            moderationLogs.logBan(config, message, banUser, banReason);
+            moderationLogs.logBan(message, banUser, banReason);
           })
           .catch(err => console.error(err));
       } else {

@@ -3,7 +3,7 @@
  * Allows staff to mute users for a specified amount of time.
  */
 
-const helpEmbeds = require('../helpers/help-embeds');
+const embeds = require('../helpers/help-embeds');
 const moderationLogs = require('../helpers/log-moderation');
 const staffChecks = require('../helpers/staffChecks');
 
@@ -23,7 +23,7 @@ module.exports.exec = async (config, message) => {
   if (!memberIsEligible) return;
   // If there are no arguments, print a help message and return.
   if (messageContent[1] === undefined) {
-    message.channel.send({ embed: helpEmbeds.mute });
+    message.channel.send({ embed: embeds.mute });
     return;
   }
   // Checks for invalid parameters
@@ -66,7 +66,7 @@ module.exports.exec = async (config, message) => {
   
   // Actually mute the user
   mute(muteMember, muteTime, muteReason);
-  moderationLogs.logMute(config, message, muteUser, muteTime, muteReason);
+  moderationLogs.logMute(message, muteUser, muteTime, muteReason);
   
 
   async function mute(member, time, reason) {
@@ -77,7 +77,7 @@ module.exports.exec = async (config, message) => {
     // If time !== 0
     if (time) {
       setTimeout(() => { muteMember.removeRole(muteRole.id); }, time * 1000);
-      moderationLogs.logUnmuteExpired(config, message, member, time);
+      moderationLogs.logUnmuteExpired(message, member, time);
     }
   }
 };

@@ -5,8 +5,9 @@
 
 const apollo = require('../../apollo');
 const staffChecks = require('../helpers/staffChecks');
+const embeds = require('../helpers/help-embeds');
+
 const models = require('../../database/models');
-const helpEmbeds = require('../helpers/help-embeds');
 const CommandModel = models.CommandModel;
 
 module.exports.exec = (config, message) => {
@@ -22,7 +23,7 @@ module.exports.exec = (config, message) => {
   if (!memberIsStaff) return;
   // If there are no arguments, print a help message and return.
   if (commandName === undefined) {
-    message.channel.send({ embed: helpEmbeds.editcommand });
+    message.channel.send({ embed: embeds.editcommand });
     return;
   }
 

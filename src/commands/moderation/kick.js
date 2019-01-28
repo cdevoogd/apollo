@@ -3,7 +3,7 @@
  * Allows staff to kick users from the server.
  */
 
-const helpEmbeds = require('../helpers/help-embeds');
+const embeds = require('../helpers/help-embeds');
 const moderationLogs = require('../helpers/log-moderation');
 const staffChecks = require('../helpers/staffChecks');
 
@@ -18,7 +18,7 @@ module.exports.exec = (config, message) => {
   if (!memberIsEligible) return;
   // If there are no arguments, print a help message and return.
   if (messageContent[1] === undefined) {
-    message.channel.send({ embed: helpEmbeds.kick });
+    message.channel.send({ embed: embeds.kick });
     return;
   }
   // Checks for invalid parameters
@@ -46,7 +46,7 @@ module.exports.exec = (config, message) => {
         guildMember.kick(kickReason)
           .then(() => {
             message.react('✅');
-            moderationLogs.logKick(config, message, kickUser, kickReason);
+            moderationLogs.logKick(message, kickUser, kickReason);
           })
           .catch(err => console.error(err));
       } else {

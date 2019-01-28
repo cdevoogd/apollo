@@ -5,8 +5,9 @@
 
 const apollo = require('../../apollo');
 const staffChecks = require('../helpers/staffChecks');
+const embeds = require('../helpers/help-embeds');
+
 const models = require('../../database/models');
-const helpEmbeds = require('../helpers/help-embeds');
 const DynamicCategoryModel = models.DynamicCategoryModel;
 
 module.exports.exec = (config, message) => {
@@ -19,7 +20,7 @@ module.exports.exec = (config, message) => {
   if (!memberIsAdmin) return;
   // If there are no arguments, print a help message and return.
   if (dynamicCategoryID === undefined) {
-    message.channel.send({ embed: helpEmbeds.deldynamic });
+    message.channel.send({ embed: embeds.deldynamic });
     return;
   }
 
