@@ -15,13 +15,12 @@ module.exports.exec = async function(config, message) {
   const newCommandName = splitMessageContent[1];
   const newCommandReply = splitMessageContent.slice(2).join(' ');
   // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(
-    message.member, config.commands.addcommand.accessLevel);
-
+  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.addcommand.accessLevel);
+  // Checks
   if (!messageAuthorIsEligible) { return; }
   if (!newCommandName) { commandHelp.sendHelpEmbed(message.channel, 'addcommand'); return; }
-  if (newCommandReply === '') { commandHelp.sendMissingArgument(message.channel, 'addcommand', 'reply'); return; }
-
+  if (!newCommandReply) { commandHelp.sendMissingArgument(message.channel, 'addcommand', 'reply'); return; }
+  // Execute Command
   const document = await CommandModel.findOne({ command: newCommandName }).exec();
   
   if (document === null) {

@@ -1,66 +1,47 @@
 /**
- * Command - !delcommand
- * Allows staff to edit the replies of already created commands.
+ * Command - !editcommand
+ * Usage: !editcommand [command] [newReply]
  */
 
 const apollo = require('../../apollo');
-const staffChecks = require('../../helpers/staffChecks');
-const embeds = require('../../helpers/commandHelp');
+const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
+const staffChecks = require('../../helpers/staffChecks');
 const CommandModel = models.CommandModel;
 
-module.exports.exec = (config, message) => {
-  const messageContent = message.content.split(' ');
-  const commandName = messageContent[1];
-  const replySlice = messageContent.slice(2);
-  const commandEditedReply = replySlice.join(' ');
-  const memberIsStaff = staffChecks.isMemberStaff(config, message.member);
+module.exports.exec = async function(config, message) {
+  const splitMessageContent = message.content.split(' ');
+  // Command Parameters
+  const commandToEdit = splitMessageContent[1];
+  const editedCommandReply = splitMessageContent.slice(2).join(' ');
+  // Message Author Eligibility
+  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.editcommand.accessLevel);
+  // Checks
+  if (!messageAuthorIsEligible) { return; }
+  if (!commandToEdit) { commandHelp.sendHelpEmbed(message.channel, 'editcommand'); return; }
+  if (!editedCommandReply) { commandHelp.sendMissingArgument(message.channel, 'editcommand', 'reply'); return; }
+  // Execute Command
+  const document = await CommandModel.findOne({ command: commandToEdit }).exec();
 
-
-  /**
-   * @function updateCommandDocument
-   * Updates the custom command configuration in the database.
-   * @returns {undefined}
-   */
-  function updateCommandDocument(commandDoc) {
-    // Replace the old reply with the new version.
-    commandDoc.reply = commandEditedReply;
-    // Update the document.
-    commandDoc.save()
-      .then(doc => {
-        console.log(`Command (${commandName}) edited. [Document ID: ${doc._id}])`);
-        // Cache the updated command
-        apollo.cacheCommands();
-        message.channel.send(`Command ${commandName} edited!`);
-      })
-      .catch(err => console.error(err));
+  if (document === null) {
+    message.channel.send('Command not found.');
+  } else {
+    const editedDocument = await editCommand(document, editedCommandReply);
+    console.log(`Command updated: [Command: ${editedDocument.command}, Document ID: ${editedDocument._id}]`);
+    message.channel.send(`Command \`${editedDocument.command}\` edited!`);
   }
-
-
-  // If they are not staff, return and stop execution.
-  if (!memberIsStaff) return;
-  // If there are no arguments, print a help message and return.
-  if (commandName === undefined) {
-    message.channel.send({ embed: embeds.editcommand });
-    return;
-  }
-
-  if (commandEditedReply === '') {
-    message.channel.send('Argument <reply> missing.');
-    return;
-  }
-
-  CommandModel.findOne({ command: commandName }).exec()
-    .then(doc => {
-      if (doc === null) {
-        message.channel.send(`Could not find command ${commandName}.`);
-        return;
-      } else {
-        updateCommandDocument(doc);
-      }
-    })
-    .catch(err => console.error(err));
-
-
-
 };
+
+/**
+ * Updates the passed document with the passed new reply.
+ * @param {Object} document - Command document to update 
+ * @param {String} editedReply - The command's new reply
+ * @returns {Promise} Promise containing the updated document 
+ */
+async function editCommand(document, editedReply) {
+  document.reply = editedReply;
+  const newDocument = await document.save();
+  // Update the cache
+  apollo.cacheCommands();
+  return newDocument;
+}

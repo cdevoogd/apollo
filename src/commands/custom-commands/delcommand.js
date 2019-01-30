@@ -1,37 +1,32 @@
 /**
  * Command - !delcommand
- * Allows staff to delete custom commands from the database.
+ * Usage: !delcommand [command]
  */
 
 const apollo = require('../../apollo');
-const staffChecks = require('../../helpers/staffChecks');
-const embeds = require('../../helpers/commandHelp');
+const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
+const staffChecks = require('../../helpers/staffChecks');
 const CommandModel = models.CommandModel;
 
-module.exports.exec = (config, message) => {
-  const messageContent = message.content.split(' ');
-  const commandName = messageContent[1];
-  const memberIsStaff = staffChecks.isMemberStaff(config, message.member);
-
-  // If they are not staff, return and stop execution.
-  if (!memberIsStaff) return;
-  // If there are no arguments, print a help message and return.
-  if (commandName === undefined) {
-    message.channel.send({ embed: embeds.delcommand });
-    return;
+module.exports.exec = async function(config, message) {
+  const splitMessageContent = message.content.split(' ');
+  // Command Parameters
+  const commandToDelete = splitMessageContent[1];
+  // Message Author Eligibility
+  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.delcommand.accessLevel);
+  // Checks
+  if (!messageAuthorIsEligible) { return; }
+  if (!commandToDelete) { commandHelp.sendHelpEmbed(message.channel, 'delcommand'); return; }
+  // Execute Command
+  const document = await CommandModel.findOneAndDelete({ command: commandToDelete });
+  if (document === null) {
+    message.channel.send('Command not found.');
+  } else {
+    // Update the cache
+    apollo.cacheCommands();
+    // Log deletion
+    console.log(`Command deleted: [Command: ${commandToDelete}, Document ID: ${document._id}]`);
+    message.channel.send(`Command \`${commandToDelete}\` deleted!`);
   }
-
-  CommandModel.findOneAndDelete({ command: commandName })
-    .then(doc => {
-      if (doc === null) {
-        message.channel.send(`Command ${commandName} not found.`);
-        return;
-      } else {
-        console.log(`Command ${commandName} deleted.`);
-        // Update the cache
-        apollo.cacheCommands();
-        message.channel.send(`Command ${commandName} deleted.`);
-      }})
-    .catch(err => console.error(err));
 };

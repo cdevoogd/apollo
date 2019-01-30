@@ -8,60 +8,53 @@ const embeds = {
   addcommand: new Discord.RichEmbed()
     .setColor(colors.customCommands)
     .setTitle(`${prefix}addcommand`)
-    .setDescription('Allows staff to add chat commands with custom replies.')
-    .addField('Usage', `${prefix}addcommand <command> <reply>`)
-    .addField('Permissions', 'Available to staff'),
+    .setDescription('Creates a custom chat command with a custom reply.')
+    .addField('Usage', `${prefix}addcommand [*command*] [*reply*]`),
   
   delcommand: new Discord.RichEmbed()
     .setColor(colors.customCommands)
     .setTitle(`${prefix}addcommand`)
-    .setDescription('Allows staff to add chat commands with custom replies.')
-    .addField('Usage', `${prefix}addcommand <command> <reply>`)
-    .addField('Permissions', 'Available to staff'),
+    .setDescription('Deletes a custom command from the server')
+    .addField('Usage', `${prefix}delcommand [*command*] [*reply*]`),
 
   editcommand: new Discord.RichEmbed()
     .setColor(colors.customCommands)
     .setTitle(`${prefix}editcommand`)
-    .setDescription('Allows staff to edit the replies of previously created commands.')
-    .addField('Usage', `${prefix}editcommand <command> <new-reply>`)
-    .addField('Permissions', 'Available to staff'),
+    .setDescription('Updates a previously created chat command with a new reply.')
+    .addField('Usage', `${prefix}editcommand [*command*] [*newReply*]`),
 
   // Dynamic Channel Commands
   adddynamic: new Discord.RichEmbed()
     .setColor(colors.dynamic)
     .setTitle(`${prefix}adddynamic`)
-    .setDescription('Allows admins to add dynamic channel configurations directly to the database.')
-    .addField('Usage', `${prefix}adddynamic <categoryID> <voice-channel-name>`)
-    .addField('Permissions', 'Available to admins'),
+    .setDescription('Adds a dynamic channel configuration for the specified category.')
+    .addField('Usage', `${prefix}adddynamic [*categoryID*] [*voiceChannelName*]`),
 
   deldynamic: new Discord.RichEmbed()
     .setColor(colors.dynamic)
     .setTitle(`${prefix}deldynamic`)
-    .setDescription('Allows admins to delete dynamic channel configurations from the database.')
-    .addField('Usage', `${prefix}deldynamic <categoryID>`)
-    .addField('Permissions', 'Available to admins'),
+    .setDescription('Deletes the dynamic channel configuration for the specified category.')
+    .addField('Usage', `${prefix}deldynamic [*categoryID*]`),
 
   // Moderation Commands
   ban: new Discord.RichEmbed()
     .setColor(colors.moderation)
     .setTitle(`${prefix}ban`)
-    .setDescription('Allows staff members to ban users from the server.')
-    .addField('Usage', `${prefix}ban <@user/userID> <reason>`)
-    .addField('Permissions', `Available to ${config.commands.ban.accessLevel}`),
+    .setDescription('Bans the mentioned member from the server.')
+    .addField('Usage', `${prefix}ban [*@member/userID*] [*reason*]`),
 
   kick: new Discord.RichEmbed()
     .setColor(colors.moderation)
     .setTitle(`${prefix}kick`)
-    .setDescription('Allows staff members to kick users from the server.')
-    .addField('Usage', `${prefix}kick <@user/userID> <reason>`)
-    .addField('Permissions', `Available to ${config.commands.kick.accessLevel}`),
+    .setDescription('Kicks the mentioned member from the server.')
+    .addField('Usage', `${prefix}kick [*@member/userID*] [*reason*]`),
 
   mute: new Discord.RichEmbed()
     .setColor(colors.moderation)
     .setTitle(`${prefix}mute`)
-    .setDescription('Allows staff members to mute users in the server.')
-    .addField('Usage', `${prefix}mute <@user/userID> <time[minutes][0=perm]> <reason>`)
-    .addField('Permissions', `Available to ${config.commands.mute.accessLevel}`)
+    .setDescription('Mutes the mentioned member for a specified amount of time. The user will be unable to speak, hear, send messages, or add reactions.')
+    .addField('Usage', `${prefix}mute [*@member/userID*] [*time(minutes)*] [*reason*]`)
+    .addField('Note', 'The *time* parameter can be set to 0 for a mute without a timer (permanent).'),
 };
 
 /**
