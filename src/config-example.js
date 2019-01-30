@@ -1,3 +1,4 @@
+// View the Configuration documentation for more information
 module.exports = {
   prefix: '!',
   botCommandsChannel: 'bot_commands',
@@ -15,7 +16,8 @@ module.exports = {
   // Staff IDs
   adminRoleID: '201908872867348480',
   staffRoleIDs: [
-    '201908872867348480'
+    '201908872867348480',
+    '501909212509168494'
   ],
   // Per-Command Configuration
   commands: {

@@ -22,7 +22,7 @@ module.exports.run = (config, client, message) => {
   // Stop from logging the bot deleted !report commands (He deleted and continues in DM to create the report.)
   if (message.content === '!report') return;
 
-  message.guild.channels.get(config.deletedMessageLog.channelID).send({embed: { messageDeletedEmbed }})
+  message.guild.channels.get(config.deletedMessageLog.channelID).send({embed: messageDeletedEmbed })
     .catch(err => console.error(err));
   
 };
