@@ -4,8 +4,8 @@
  */
 
 const apollo = require('../../apollo');
-const staffChecks = require('../helpers/staffChecks');
-const embeds = require('../helpers/help-embeds');
+const staffChecks = require('../../helpers/staffChecks');
+const embeds = require('../../helpers/commandHelp');
 const models = require('../../database/models');
 const CommandModel = models.CommandModel;
 
@@ -15,6 +15,7 @@ module.exports.exec = (config, message) => {
   const replySlice = messageContent.slice(2);
   const commandEditedReply = replySlice.join(' ');
   const memberIsStaff = staffChecks.isMemberStaff(config, message.member);
+
 
   /**
    * @function updateCommandDocument
@@ -34,6 +35,7 @@ module.exports.exec = (config, message) => {
       })
       .catch(err => console.error(err));
   }
+
 
   // If they are not staff, return and stop execution.
   if (!memberIsStaff) return;

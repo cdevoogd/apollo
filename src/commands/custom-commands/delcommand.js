@@ -4,8 +4,8 @@
  */
 
 const apollo = require('../../apollo');
-const staffChecks = require('../helpers/staffChecks');
-const embeds = require('../helpers/help-embeds');
+const staffChecks = require('../../helpers/staffChecks');
+const embeds = require('../../helpers/commandHelp');
 const models = require('../../database/models');
 const CommandModel = models.CommandModel;
 

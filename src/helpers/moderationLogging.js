@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const config = require('../../config');
-const colors = require('./embed-colors');
+const config = require('../config');
+const colors = require('./colors');
 
 const loggingEnabled = config.moderationLog.enabled;
 

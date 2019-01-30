@@ -4,8 +4,8 @@
  */
 
 const Discord = require('discord.js');
-const colors = require('../helpers/embed-colors');
-const moderationLogs = require('../helpers/log-moderation');
+const colors = require('../../helpers/colors');
+const moderationLogs = require('../../helpers/moderationLogging');
 
 module.exports.exec = async (config, message) => {
   const dm = await message.member.createDM();

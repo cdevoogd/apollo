@@ -3,9 +3,9 @@
  * Allows staff to kick users from the server.
  */
 
-const embeds = require('../helpers/help-embeds');
-const moderationLogs = require('../helpers/log-moderation');
-const staffChecks = require('../helpers/staffChecks');
+const embeds = require('../../helpers/commandHelp');
+const moderationLogs = require('../../helpers/moderationLogging');
+const staffChecks = require('../../helpers/staffChecks');
 
 module.exports.exec = (config, message) => {
   const messageContent = message.content.split(' ');

@@ -15,29 +15,32 @@ module.exports = {
   // Staff IDs
   adminRoleID: '201908872867348480',
   staffRoleIDs: [
-    '201908872867348480',
-    //'261921168146038785'
+    '201908872867348480'
   ],
   // Per-Command Configuration
   commands: {
-    /*
-      Custom Command Commands
-    */
+    // accessLevel determines which roles can use the command.
+    //  'admin' = adminRoleID,
+    //  'staff' = staffRoleIDs
+
+    // Custom Command Commands
     commands: {
-      enabled: true
+      enabled: true,
     },
     addcommand: {
-      enabled: true
+      enabled: true,
+      accessLevel: 'admin'
     },
     editcommand: {
-      enabled: true
+      enabled: true,
+      accessLevel: 'admin'
     },
     delcommand: {
-      enabled: true
+      enabled: true,
+      accessLevel: 'admin'
     },
-    /*
-      Dynamic Channel Commands
-    */
+
+    // Dynamic Channel Commands
     lock: {
       enabled: true,
       commandChannelOnly: true
@@ -52,12 +55,8 @@ module.exports = {
     deldynamic: {
       enabled: true
     },
-    /*
-      Moderation Commands
-      accessLevel determines which roles can use the command.
-        'admin' = adminRoleID, 
-        'staff' = staffRoleIDs
-    */
+
+    // Moderation Commands
     ban: {
       enabled: true,
       accessLevel: 'admin'
@@ -72,7 +71,7 @@ module.exports = {
     },
     report: {
       enabled: true,
-      // Report is available to everyone as a way to send reports for staff to view.
+      // Ensure that the report channel ID is configured at the top if enabled.
     }
   }
 };

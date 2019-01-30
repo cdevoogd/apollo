@@ -5,7 +5,7 @@
  */
 
 const Discord = require('discord.js');
-const colors = require('../commands/helpers/embed-colors');
+const colors = require('../helpers/colors');
 
 module.exports.run = (config, client, message) => {
   const messageDeletedEmbed = new Discord.RichEmbed()

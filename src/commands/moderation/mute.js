@@ -3,9 +3,9 @@
  * Allows staff to mute users for a specified amount of time.
  */
 
-const embeds = require('../helpers/help-embeds');
-const moderationLogs = require('../helpers/log-moderation');
-const staffChecks = require('../helpers/staffChecks');
+const embeds = require('../../helpers/commandHelp');
+const moderationLogs = require('../../helpers/moderationLogging');
+const staffChecks = require('../../helpers/staffChecks');
 
 module.exports.exec = async (config, message) => {
   const accessLevel = config.commands.kick.accessLevel;
@@ -18,7 +18,22 @@ module.exports.exec = async (config, message) => {
   const muteReason = messageContent.slice(3).join(' ');
   let muteRole = message.guild.roles.find(role => role.name === 'muted');
 
-  
+  async function mute(member, time, reason) {
+    await member.addRole(muteRole.id);
+    member.setMute(true, '(Apollo - Mute)' + reason);
+    member.setDeaf(true, '(Apollo - Mute)' + reason);
+
+    // If time !== 0
+    if (time) {
+      setTimeout(() => { 
+        muteMember.removeRole(muteRole.id);
+        member.setMute(false);
+        member.setDeaf(false);
+        moderationLogs.logUnmuteExpired(message, member, time);
+      }, (time * 1000));
+      
+    }
+  }
 
   if (!memberIsEligible) return;
   // If there are no arguments, print a help message and return.
@@ -55,7 +70,7 @@ module.exports.exec = async (config, message) => {
 
   // Adding an overwrite for the role makes it so that anyone that has it can no longer send chat messages/reacitons.
   // I am only doing this on text channels, as I will server mute and deafen for voice.
-  message.guild.channels.forEach(async (channel, id) => {
+  message.guild.channels.forEach(async (channel) => {
     if (channel.type === 'text') {
       await channel.overwritePermissions(muteRole, {
         SEND_MESSAGES: false,
@@ -67,17 +82,4 @@ module.exports.exec = async (config, message) => {
   // Actually mute the user
   mute(muteMember, muteTime, muteReason);
   moderationLogs.logMute(message, muteUser, muteTime, muteReason);
-  
-
-  async function mute(member, time, reason) {
-    await member.addRole(muteRole.id);
-    member.setMute(true, '(Apollo - Mute)' + reason);
-    member.setDeaf(true, '(Apollo - Mute)' + reason);
-
-    // If time !== 0
-    if (time) {
-      setTimeout(() => { muteMember.removeRole(muteRole.id); }, time * 1000);
-      moderationLogs.logUnmuteExpired(message, member, time);
-    }
-  }
 };
