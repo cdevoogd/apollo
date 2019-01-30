@@ -44,6 +44,7 @@ module.exports.exec = async function (config, message) {
   });
 
   mute(muteRole, muteMember, muteTime, muteReason);
+  message.react('✅');
   moderationLogging.logMute(message, muteMember, muteTime, muteReason);
 };
 
