@@ -33,4 +33,4 @@ npm install
 If you don’t already have one, you will also need to setup MongoDB for use with Apollo. Personally, I recommend using [MongoDB Atlas.](https://www.mongodb.com/cloud/atlas)
 
 ## Configuration
-To view configuration instructions, (click here)[./docs/configuration.md]
+To view configuration instructions, [click here](./docs/configuration.md)
