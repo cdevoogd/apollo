@@ -9,7 +9,7 @@ module.exports.StaffIDModel = mongoose.model('config', {
   staffIDs: []
 });
 
-module.exports.DynamicCategoryModel = mongoose.model('dynamic', {
+module.exports.DynamicConfigurationModel = mongoose.model('dynamic', {
   categoryID: String,
   channelName: String
 });

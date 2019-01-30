@@ -1,38 +1,33 @@
 /**
  * Command - !deldynamic
- * Allows admins to delete dynamic channel configurations from the database.
+ * Usage: !deldynamic [categoryID]
  */
 
 const apollo = require('../../apollo');
-const staffChecks = require('../../helpers/staffChecks');
-const embeds = require('../../helpers/commandHelp');
+const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
-const DynamicCategoryModel = models.DynamicCategoryModel;
+const staffChecks = require('../../helpers/staffChecks');
+const DynamicConfigurationModel = models.DynamicConfigurationModel;
 
-module.exports.exec = (config, message) => {
-  const messageContent = message.content.split(' ');
-  const dynamicCategoryID = messageContent[1];
-  const memberIsAdmin = staffChecks.isMemberAdmin(config, message.member);
+module.exports.exec = async function(config, message) {
+  const splitMessageContent = message.content.split(' ');
+  // Command Parameters
+  const dynamicCategoryID = splitMessageContent[1];
+  // Message Author Eligibility
+  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.deldynamic.accessLevel);
+  // Checks
+  if (!messageAuthorIsEligible) { return; }
+  if (!dynamicCategoryID) { commandHelp.sendHelpEmbed(message.channel, 'deldynamic'); return; }
+  // Execute Command
+  const document = await DynamicConfigurationModel.findOneAndDelete({ categoryID: dynamicCategoryID });
 
-  // If they are not an admin, return and stop execution.
-  if (!memberIsAdmin) return;
-  // If there are no arguments, print a help message and return.
-  if (dynamicCategoryID === undefined) {
-    message.channel.send({ embed: embeds.deldynamic });
-    return;
+  if (document === null) {
+    message.channel.send(`Configuration for \`${dynamicCategoryID}\` not found.`);
+  } else {
+    // Update Cache
+    apollo.cacheDynamicInfo();
+    // Log deletion
+    console.log(`Dynamic configuration deleted: [Category: ${dynamicCategoryID}, Document ID: ${document._id}]`);
+    message.channel.send('Dynamic configuration deleted!');
   }
-
-  DynamicCategoryModel.findOneAndDelete({ categoryID: dynamicCategoryID })
-    .then(doc => {
-      if (doc === null) {
-        message.channel.send(`Configuration for ${dynamicCategoryID} not found.`);
-        return;
-      } else {
-        console.log(`Dynamic configuration for ${dynamicCategoryID} deleted.`);
-        // Update the cache
-        apollo.cacheDynamicInfo();
-        message.channel.send(`Configuration for ${dynamicCategoryID} deleted.`);
-      }
-    })
-    .catch(err => console.error(err));
 };
