@@ -1,11 +1,3 @@
-/*
- * Event - Message (Runs when a messageContent is sent)
- * 
- * This event checks for:
- * Custom chat commands (Defined in ../config/commands.js)
- * 
- */
-
 module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
   const messageContent = message.content.split(' ');
   

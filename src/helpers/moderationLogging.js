@@ -12,12 +12,12 @@ async function getReportLogChannel(message) {
   return message.guild.channels.get(config.report.channelID);
 }
 
-module.exports.logBan = async (message, bannedUser, reason) => {
+module.exports.logBan = async (message, bannedMember, reason) => {
   if (loggingEnabled) {
     const banEmbed = new Discord.RichEmbed()
       .setColor(colors.ban)
       .setTitle('Member Banned')
-      .addField('Member', bannedUser)
+      .addField('Member', bannedMember)
       .addField('Reason', reason)
       .addField('Staff Member', message.author)
       .addField('Time Stamp', message.createdAt);
@@ -27,12 +27,12 @@ module.exports.logBan = async (message, bannedUser, reason) => {
   }
 };
 
-module.exports.logKick = async (message, kickedUser, reason) => {
+module.exports.logKick = async (message, kickedMember, reason) => {
   if (loggingEnabled) {
     const kickEmbed = new Discord.RichEmbed()
       .setColor(colors.kick)
       .setTitle('Member Kicked')
-      .addField('Member', kickedUser)
+      .addField('Member', kickedMember)
       .addField('Reason', reason)
       .addField('Staff Member', message.author)
       .addField('Time Stamp', message.createdAt);
@@ -42,11 +42,11 @@ module.exports.logKick = async (message, kickedUser, reason) => {
   }
 };
 
-module.exports.logReport = async (message, reportedUser, reason) => {
+module.exports.logReport = async (message, reportedMember, reason) => {
   const reportEmbed = new Discord.RichEmbed()
     .setColor(colors.report)
     .setTitle('Report')
-    .addField('Member', reportedUser)
+    .addField('Member', reportedMember)
     .addField('Reason', reason)
     .addField('Reportee', message.author)
     .addField('Time Stamp', message.createdAt);
@@ -55,31 +55,18 @@ module.exports.logReport = async (message, reportedUser, reason) => {
   logChannel.send({ embed: reportEmbed });
 };
 
-module.exports.logMute = async (message, mutedUser, time, reason) => {
+module.exports.logMute = async (message, mutedMember, time, reason) => {
   if (loggingEnabled) {
     const muteEmbed = new Discord.RichEmbed()
       .setColor(colors.mute)
       .setTitle('Member Muted')
-      .addField('Member', mutedUser)
-      .addField('Mute Length', `${time} seconds`)
+      .addField('Member', mutedMember)
+      .addField('Mute Length', `${time} minutes (0 = permanent)`)
       .addField('Reason', reason)
       .addField('Staff Member', message.author)
       .addField('Time Stamp', message.createdAt);
 
     const logChannel = await getModerationLogChannel(message);
     logChannel.send({ embed: muteEmbed });
-  }
-};
-
-module.exports.logUnmuteExpired = async (message, mutedUser, time) => {
-  if (loggingEnabled) {
-    const unmuteExpiredEmbed = new Discord.RichEmbed()
-      .setColor(colors.unmute)
-      .setTitle('Member Unmuted')
-      .addField('Member', mutedUser)
-      .addField('Mute Length', `${time} seconds`);
-
-    const logChannel = await getModerationLogChannel(message);
-    logChannel.send({ embed: unmuteExpiredEmbed });
   }
 };

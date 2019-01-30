@@ -54,7 +54,8 @@ const embeds = {
     .setTitle(`${prefix}mute`)
     .setDescription('Mutes the mentioned member for a specified amount of time. The user will be unable to speak, hear, send messages, or add reactions.')
     .addField('Usage', `${prefix}mute [*@member/userID*] [*time(minutes)*] [*reason*]`)
-    .addField('Note', 'The *time* parameter can be set to 0 for a mute without a timer (permanent).'),
+    .addField('Note', 'The *time* parameter can be set to 0 for a mute without a timer (permanent).')
+    .addField('Note 2', 'If a user was muted in a voice channel and then disconnects from that channel, the muted role will be removed, but they will still be server muted and deafened.'),
 };
 
 /**
@@ -68,5 +69,25 @@ module.exports.sendHelpEmbed = function(channel, command) {
 
 
 module.exports.sendMissingArgument = function(channel, command, argument) {
-  channel.send(`Command argument **[${argument}]** missing. Type \`${config.prefix}${command}\` for help. `);
+  channel.send(`Command argument **[${argument}]** missing. Type \`${config.prefix}${command}\` for help.`);
+};
+
+module.exports.sendInvalidArgument = function(channel, command, argument) {
+  channel.send(`Invalid argument **[${argument}]**. Type \`${config.prefix}${command}\` for help.`);
+};
+
+module.exports.sendMemberIsBot = function(channel) {
+  channel.send('Member given is a bot. Please contact the server owner to ban, kick, or mute bots on the server.');
+};
+
+module.exports.sendMemberIsStaff = function(channel) {
+  channel.send('Member is a staff member. Please contact the server administration to ban, kick, or mute another staff member.');
+};
+
+module.exports.sendMemberUnbannable = function(channel) {
+  channel.send('Member is not bannable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
+};
+
+module.exports.sendMemberUnkickable = function (channel) {
+  channel.send('Member is not kickable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
 };
