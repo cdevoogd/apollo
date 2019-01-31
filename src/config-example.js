@@ -16,8 +16,7 @@ module.exports = {
   // Staff IDs
   adminRoleID: '201908872867348480',
   staffRoleIDs: [
-    '201908872867348480',
-    '501909212509168494'
+    '201908872867348480'
   ],
   // Per-Command Configuration
   commands: {
@@ -52,10 +51,12 @@ module.exports = {
       commandChannelOnly: true
     },
     adddynamic: {
-      enabled: true
+      enabled: true,
+      accessLevel: 'admin'
     },
     deldynamic: {
-      enabled: true
+      enabled: true,
+      accessLevel: 'admin'
     },
 
     // Moderation Commands
