@@ -1,4 +1,5 @@
-# Apollo
+![Apollo Banner](https://i.imgur.com/8WBIFpW.jpg)
+
 Apollo is a custom Discord bot built using discord.js. Development of Apollo started as my way to learn programming, and quickly spiraled into something much bigger.
 
 Apollo is currently being run mainly on the [Genx Esports Discord server.](https://discord.me/genx_esports) Feel free to stop by and see him in action.
