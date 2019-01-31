@@ -1,21 +1,23 @@
 /**
  * Command - !unlock
- * Allows dynamic channels to be unlocked, after being locked.
+ * Usage: !unlock
  */
 
-module.exports.exec = async (config, dynamicInfo, message) => {
-  const currentVC = message.member.voiceChannel;
-  const dyanmicInfoResolved = await dynamicInfo;
-  const dyanmicCategories = Object.keys(dyanmicInfoResolved);
+module.exports.exec = async function(config, dynamicInfo, message) {
+  const voiceChannel = message.member.voiceChannel;
+  const dynamicConfig = await dynamicInfo;
 
-  // Make sure that the command is in the bot commands channel.
-  if (message.channel.name === config.botCommandsChannel) {
-    // Make sure the user is in a voice channel and that the channel is dynamic
-    if (currentVC && dyanmicCategories.includes(currentVC.parentID)) {
-      // Reset the permissions that are overwritten when locked.
-      currentVC.overwritePermissions(message.guild.defaultRole, { CONNECT: null });
-      currentVC.overwritePermissions(config.adminRoleID, { CONNECT: null });
-      message.react('✅');
+  if (config.commands.unlock.commandChannelOnly) {
+    if (message.channel.name === config.botCommandsChannel) { unlockChannel(); }
+  } else {
+    unlockChannel();
+  }
+  
+  function unlockChannel() {
+    if (voiceChannel && dynamicConfig.hasOwnProperty(voiceChannel.parentID)) {
+      voiceChannel.overwritePermissions(message.guild.defaultRole, { CONNECT: null });
+      voiceChannel.overwritePermissions(config.adminRoleID, { CONNECT: null });
+      message.react('🔓');
     }
   }
 };

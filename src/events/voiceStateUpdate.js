@@ -6,43 +6,14 @@
  * channel open.
  */
 
-module.exports.run = (config, dynamicInfo, userOld, userNew) => {
-  const channelBefore = userOld.voiceChannel;
-  const channelAfter = userNew.voiceChannel;
-  const roleEveryone = userNew.guild.defaultRole;
-  
-  let dynamicCategories;
-  let dynamicObj;
+module.exports.run = async (config, dynamicInfo, memberOld, memberNew) => {
+  const channelBefore = memberOld.voiceChannel;
+  const channelAfter = memberNew.voiceChannel;
+  const roleEveryone = memberNew.guild.defaultRole;
+  const dynamicConfig = await dynamicInfo;
   let currentCategory;
   let extraChannelCount;
 
-  // Using then() because dynamicInfo is a promise.
-  dynamicInfo.then((obj) => {
-    dynamicCategories = Object.keys(obj);
-    dynamicObj = obj;
-
-    // Runs when a user joins a channel
-    if (channelAfter && isDynamicChannel(channelAfter)) {
-      currentCategory = channelAfter.parentID;  
-
-      // Checks if the user is the first person to join the channel.
-      if (isNthChannelMember(channelAfter, 1)) {
-        extraChannelCount = manageExtraChannels(userNew);
-        createDynamicChannel(userNew, extraChannelCount, currentCategory);
-      }
-    }
-
-    // Runs when a user leaves a channel
-    if (channelBefore && isDynamicChannel(channelBefore)) {
-      currentCategory = channelBefore.parentID;
-      
-      // Checks if the user was the last person in the channel, making it now empty.
-      if (isNthChannelMember(channelBefore, 0)) {
-        extraChannelCount = manageExtraChannels(userOld);
-        createDynamicChannel(userOld, extraChannelCount, currentCategory);
-      }
-    }
-  });
 
   /**
    * @function isDynamicChannel
@@ -51,101 +22,89 @@ module.exports.run = (config, dynamicInfo, userOld, userNew) => {
    * @returns {Boolean}
    */
   function isDynamicChannel(channel) {
-    return dynamicCategories.includes(channel.parentID);
+    return dynamicConfig.hasOwnProperty(channel.parentID);
   }
 
   /**
    * @function isNthChannelMember
-   * Checks if the user is the Nth member of the provided voice channel.
+   * Checks if the channel passed has n members. (Uses 0 for channelBefore, and 1 for channelAfter)
    * @param {VoiceChannel} channel 
    * @param {Integer} n 
-   * @returns {undefined}
+   * @returns {Boolean}
    */
   function isNthChannelMember(channel, n) {
-    if (channel.members.array().length === n) {
-      return true;
-    } else {
-      return false;
-    }
+    return (channel.members.array().length === n) ? true : false;
   }
 
   /**
    * @function manageExtraChannels
-   * Loops through the channels in the guild to make sure that there is at least one empty dynamic channel. 
-   * If there is more than one empty channel, it will be deleted.
+   * Makes sure that there is exactly one extra, empty, unlocked voice channel. When there is more than one, the rest will be deleted.
    * @param {GuildMember} guildMember 
    * @returns {Integer}
    */
   function manageExtraChannels(guildMember) {
-    // Manages the extra dynamic channels in the server. 
-    // Checks if there is at least one empty, extra channel. Channels after that will be deleted.
     let channels = guildMember.guild.channels.array();
     let extraChannels = 0;
+
     for (let channel of channels) {
-      // Check if the channel is dynamic, a voice channel, and is empty
-      if (channel.parentID === currentCategory && channel.type === 'voice' && channel.members.array().length === 0) {
-        if (extraChannels === 1) {
-          // If at least one empty dynamic channel has already been found, delete the extras
-          channel.delete();
-        } else {
-          // Check if the empty extra channel is locked, and if so unlock it.
-          if (isChannelLocked(channel)) {
-            unlockChannel(channel);
-          }
-          // Set that there is at least one empty dynamic channel
-          extraChannels = 1;
-        }
+      if (channel.parentID === currentCategory
+        && channel.type === 'voice'
+        && channel.members.array().length === 0) {
+        // If there is already one, delete the rest, if 1, make sure its unlocked.
+        (extraChannels === 1) ? channel.delete() : unlockLockedChannel(channel); extraChannels = 1;
       }
     }
-
     return extraChannels;
-
-    /**
-     * @function isChannelLocked
-     * Checks if the extra voice channel is locked by checking if the everyone role has the CONNECT permission.
-     * @param {VoiceChannel} currentChannel 
-     * @returns {Boolean}
-     */
-    function isChannelLocked(currentChannel) {
-      // Checks if @everyone is able to connect to the channel. If not, it must be locked.
-      const permissions = currentChannel.permissionsFor(roleEveryone).toArray();
-      return !permissions.includes('CONNECT');
-    }
-
-    /**
-     * @function unlockChannel
-     * Unlocks the voice channel by setting the locked/overwritten permissions to default.
-     * @param {VoiceChannel} currentChannel 
-     * @returns {undefined}
-     */
-    function unlockChannel(currentChannel) {
-      currentChannel.overwritePermissions(roleEveryone, { CONNECT: null });
-      currentChannel.overwritePermissions(config.adminRoleID, { CONNECT: null });
-    }
   }
 
   /**
-   * @async
+     * @function unlockLockedChannel
+     * Unlocks a locked voice channel by setting the locked/overwritten permissions to default.
+     * @param {VoiceChannel} currentChannel 
+     * @returns {undefined}
+     */
+  function unlockLockedChannel(currentChannel) {
+    if (!currentChannel.permissionsFor(roleEveryone).toArray().includes('CONNECT')) {
+      currentChannel.overwritePermissions(roleEveryone, { CONNECT: null });
+      currentChannel.overwritePermissions(config.adminRoleID, { CONNECT: null });
+    }
+
+  }
+
+  /**
    * @function createDynamicChannel
-   * Creates a new dynamic channel under the current category.
+   * If there is not an extra channel, one will be created. This channel is hidden from members when created until it is moved to its category
+   * where it is then shown (server owner will still see it moving).
    * @param {GuildMember} guildMember 
    * @param {Integer} extraChannels 
-   * @param {String} currentCat 
+   * @param {String} currentCat
+   * @returns {undefined}
    */
   async function createDynamicChannel(guildMember, extraChannels, currentCat) {
-    // Using currentCat as a parameter to keep it from placing channels in the wrong category when running quickly.
-    // Permissions on channel creation to hide channel before it is moved
-    const creationPermissions = [{
-      id: roleEveryone, denied: ['VIEW_CHANNEL']
-    }];
+    // NOTE CurrentCat has to be used as a parameter (instead of using currentCategory) to keep the channels from being created in the last category the member was in.
 
     if (extraChannels === 0) {
-      await guildMember.guild.createChannel(dynamicObj[currentCat], 'voice', creationPermissions)
-        // Move the channel to the current dynamic category
+      await guildMember.guild.createChannel(dynamicConfig[currentCat], 'voice', [{ id: roleEveryone, denied: ['VIEW_CHANNEL'] }])
         .then(channel => channel.setParent(currentCat))
-        // Allow it to be viewed again
-        .then(channel => channel.overwritePermissions(roleEveryone, {VIEW_CHANNEL: true}))
-        .catch(console.error);
+        .then(channel => channel.overwritePermissions(roleEveryone, { VIEW_CHANNEL: true }))
+        .catch(err => console.error(err));
+    }
+  }
+  // End of functions
+  
+  if (channelAfter && isDynamicChannel(channelAfter)) {
+    currentCategory = channelAfter.parentID;
+    if (isNthChannelMember(channelAfter, 1)) {
+      extraChannelCount = manageExtraChannels(memberNew);
+      createDynamicChannel(memberNew, extraChannelCount, currentCategory);
+    }
+  }
+
+  if (channelBefore && isDynamicChannel(channelBefore)) {
+    currentCategory = channelBefore.parentID;
+    if (isNthChannelMember(channelBefore, 0)) {
+      extraChannelCount = manageExtraChannels(memberOld);
+      createDynamicChannel(memberOld, extraChannelCount, currentCategory);
     }
   }
 };

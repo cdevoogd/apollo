@@ -49,7 +49,7 @@ module.exports.getCommands = async () => {
  */
 module.exports.getDynamicInfo = async () => {
   let output = {};
-  const result = await models.DynamicCategoryModel.find().exec();
+  const result = await models.DynamicConfigurationModel.find().exec();
   for (let obj of result) {
     // Creates an object as {categoryID: channelName} for easy reference
     output[obj.categoryID] = obj.channelName;

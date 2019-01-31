@@ -5,7 +5,9 @@
  * initialization info to the console.
  */
 
-function run(client) {
+module.exports.run = (client) => {
+  const currentTime = new Date();
+  console.log('Start Time: ' + currentTime.toUTCString());
   console.log(`Bot ready and logged in as ${client.user.tag}!`);
   // Set bot status
   client.user
@@ -14,8 +16,5 @@ function run(client) {
     })
     .then((presence) => console.log(`Set current activity to: ${presence.game ? presence.game.name : 'none'}`))
     .catch(console.error);
-}
-
-module.exports = {
-  run
 };
+

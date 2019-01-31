@@ -6,15 +6,18 @@ const client = new Discord.Client();
 // Event Handlers
 const eventReady = require('./events/ready');
 const eventMessage = require('./events/message');
+const eventMessagedDeleted = require('./events/messageDeleted');
 const eventVoiceStatusUpdate = require('./events/voiceStateUpdate');
 // Configs
 const config = require('./config');
 // Database
 const mongo = require('./database/operations');
 
-// Connect to the database
+// Line to break up logs
+console.log('----------------------------------------------');
+
+// Connect and cache from db
 mongo.connect();
-// Cache the commands and dynamic channel information from the database
 let commands; 
 let dynamicInfo;
 
@@ -29,8 +32,12 @@ client.on('ready', () => {
   eventReady.run(client);
 });
 
-client.on('message', (msg) => {
-  eventMessage.run(config, commands, dynamicInfo, client, msg);
+client.on('message', (message) => {
+  eventMessage.run(config, commands, dynamicInfo, client, message);
+});
+
+client.on('messageDelete', (message) => {
+  eventMessagedDeleted.run(config, client, message);
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {

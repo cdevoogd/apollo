@@ -1,77 +1,51 @@
 /**
  * Command - !addcommand
- * Allows staff to add custom commands to the database.
+ * Usage: !addcommand [command] [reply]
  */
 
 const apollo = require('../../apollo');
+const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
-const helpEmbeds = require('../helpers/help-embeds');
+const staffChecks = require('../../helpers/staffChecks');
 const CommandModel = models.CommandModel;
 
-module.exports.exec = (config, message) => {
-  const messageContent = message.content.split(' ');
-  const commandName = messageContent[1];
+module.exports.exec = async function(config, message) {
+  const splitMessageContent = message.content.split(' ');
+  // Command Parameters
+  const newCommandName = splitMessageContent[1];
+  const newCommandReply = splitMessageContent.slice(2).join(' ');
+  // Message Author Eligibility
+  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.addcommand.accessLevel);
+  // Checks
+  if (!messageAuthorIsEligible) { return; }
+  if (!newCommandName) { commandHelp.sendHelpEmbed(message.channel, 'addcommand'); return; }
+  if (!newCommandReply) { commandHelp.sendMissingArgument(message.channel, 'addcommand', 'reply'); return; }
+  // Execute Command
+  const document = await CommandModel.findOne({ command: newCommandName }).exec();
   
-  const replySlice = messageContent.slice(2);
-  const commandReply = replySlice.join(' ');
-
-  const memberRoleIDs = message.member.roles.keyArray();
-  const staffRoleIDs = config.staffRoleIDs;
-  let memberIsStaff = false;
-
-  // Loop through the member's IDs and check if they have a staff role.
-  for (let id of memberRoleIDs) {
-    if (staffRoleIDs.includes(id)) {
-      memberIsStaff = true;
-      break;
-    }
-  }
-
-  // If they are not staff, return and stop execution.
-  if (!memberIsStaff) return;
-  // If there are no arguments, print a help message and return.
-  if (commandName === undefined) {
-    message.channel.send({embed: helpEmbeds.addcommand});
-    return;
-  }
-
-  if (commandReply === '') {
-    message.channel.send('Argument <reply> missing.');
-    return;
-  }
-
-  CommandModel.findOne({ command: commandName }).exec()
-    .then(doc => {
-      if (doc === null) {
-        writeCommandDocument();
-        
-      } else {
-        message.channel.send(`Command ${commandName} already exists.`);
-        return;
-      }
-    })
-    .catch(err => console.error(err));
-    
-    
-  /**
-   * @function writeCommandDocument
-   * Writes the custom command configuration to the database.
-   * @returns {undefined}
-   */
-  function writeCommandDocument() {
-    // Create a model to create the document with
-    const newCommand = new CommandModel({
-      command: commandName,
-      reply: commandReply
-    });
-
-    newCommand.save()
-      .then(doc => {
-        console.log(`New command (${commandName}) added. [Document ID: ${doc._id}])`);
-        // Cache the new command
-        apollo.cacheCommands();
-        message.channel.send(`Command ${commandName} added!`);
-      })
-      .catch(err => console.error(err));
+  if (document === null) {
+    const commandDoc = await createCommand(newCommandName, newCommandReply);
+    console.log(`New command added: [Command: ${commandDoc.command}, Document ID: ${commandDoc._id}]`);
+    message.channel.send(`Command \`${commandDoc.command}\` added!`);
+  } else {
+    message.channel.send('Command already exists.');
   }
 };
+
+/**
+ * Saves the command and reply to a document in the database.
+ * @param {String} commandName 
+ * @param {String} commandReply 
+ * @returns {Promise} Promise containing the saved document.
+ */
+async function createCommand(commandName, commandReply) {
+  const newCommand = new CommandModel({
+    command: commandName,
+    reply: commandReply
+  });
+  const commandDocument = await newCommand.save();
+
+  // Update the command cache with the new command.
+  apollo.cacheCommands();
+  return commandDocument;
+}
