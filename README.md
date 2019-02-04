@@ -15,7 +15,7 @@ Apollo is currently being run mainly on the [Genx Esports Discord server.](https
 * Using these commands, you can create any command with a custom reply.
 
 ### Moderation
-* Apollo is able to *!ban*, *!kick*, and *!mute*.
+* Apollo is able to ban, kick, mute, and clear messages.
 * There is also a *!report* command that members can use to report other members to staff.
 * Moderation actions can also be configured to be logged to a specific  channel.
 

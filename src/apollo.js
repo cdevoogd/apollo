@@ -32,6 +32,8 @@ client.on('ready', () => {
   eventReady.run(client);
 });
 
+client.on('error', console.error);
+
 client.on('message', (message) => {
   eventMessage.run(config, commands, dynamicInfo, client, message);
 });

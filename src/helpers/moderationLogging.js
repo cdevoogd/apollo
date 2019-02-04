@@ -42,17 +42,35 @@ module.exports.logKick = async (message, kickedMember, reason) => {
   }
 };
 
-module.exports.logReport = async (message, reportedMember, reason) => {
-  const reportEmbed = new Discord.RichEmbed()
-    .setColor(colors.report)
-    .setTitle('Report')
-    .addField('Member', reportedMember)
-    .addField('Reason', reason)
-    .addField('Reportee', message.author)
-    .addField('Time Stamp', message.createdAt);
+module.exports.logClear = async (message, messageCount) => {
+  if (loggingEnabled) {
+    const clearEmbed = new Discord.RichEmbed()
+      .setColor(colors.kick)
+      .setTitle('Bulk Message Clear')
+      .addField('Channel', message.channel)
+      .addField('Message Count', messageCount)
+      .addField('Staff Member', message.author)
+      .addField('Time Stamp', message.createdAt);
 
-  const logChannel = await getReportLogChannel(message);
-  logChannel.send({ embed: reportEmbed });
+    const logChannel = await getModerationLogChannel(message);
+    logChannel.send({ embed: clearEmbed });
+  }
+};
+
+module.exports.logClearUser = async (message, messageCount, member) => {
+  if (loggingEnabled) {
+    const clearUserEmbed = new Discord.RichEmbed()
+      .setColor(colors.kick)
+      .setTitle('User Messages Cleared')
+      .addField('Channel', message.channel)
+      .addField('Member', member)
+      .addField('Message Count', messageCount)
+      .addField('Staff Member', message.author)
+      .addField('Time Stamp', message.createdAt);
+
+    const logChannel = await getModerationLogChannel(message);
+    logChannel.send({ embed: clearUserEmbed });
+  }
 };
 
 module.exports.logMute = async (message, mutedMember, time, reason) => {
@@ -70,3 +88,18 @@ module.exports.logMute = async (message, mutedMember, time, reason) => {
     logChannel.send({ embed: muteEmbed });
   }
 };
+
+module.exports.logReport = async (message, reportedMember, reason) => {
+  const reportEmbed = new Discord.RichEmbed()
+    .setColor(colors.report)
+    .setTitle('Report')
+    .addField('Member', reportedMember)
+    .addField('Reason', reason)
+    .addField('Reportee', message.author)
+    .addField('Time Stamp', message.createdAt);
+
+  const logChannel = await getReportLogChannel(message);
+  logChannel.send({ embed: reportEmbed });
+};
+
+
