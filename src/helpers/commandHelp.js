@@ -43,6 +43,20 @@ const embeds = {
     .setDescription('Bans the mentioned member from the server.')
     .addField('Usage', `${prefix}ban [*@member/userID*] [*reason*]`),
 
+  clear: new Discord.RichEmbed()
+    .setColor(colors.moderation)
+    .setTitle(`${prefix}clear`)
+    .setDescription('Deletes a set amount of messages from the channel.')
+    .addField('Usage', `${prefix}clear [*messageCount*]`)
+    .addField('Message Count', 'Minimum Value: 2, Maximum Value: 100'),
+
+  clearuser: new Discord.RichEmbed()
+    .setColor(colors.moderation)
+    .setTitle(`${prefix}clearuser`)
+    .setDescription('Deletes a set amount of messages in the channel from a specific user.')
+    .addField('Usage', `${prefix}clearuser [*@member/userID*] [*messageCount*]`)
+    .addField('Message Count', 'Minimum Value: 2, Maximum Value: 100'),
+
   kick: new Discord.RichEmbed()
     .setColor(colors.moderation)
     .setTitle(`${prefix}kick`)
@@ -76,6 +90,14 @@ module.exports.sendInvalidArgument = function(channel, command, argument) {
   channel.send(`Invalid argument **[${argument}]**. Type \`${config.prefix}${command}\` for help.`);
 };
 
+module.exports.sendMaxExceeded = function(channel, command, argument) {
+  channel.send(`Argument **[${argument}]** exceeds ${command}'s max value. Type \`${config.prefix}${command}\` for help.`);
+};
+
+module.exports.sendMinUnmet = function (channel, command, argument) {
+  channel.send(`Argument **[${argument}]** does not meet ${command}'s minimum value. Type \`${config.prefix}${command}\` for help.`);
+};
+
 module.exports.sendMemberIsBot = function(channel) {
   channel.send('Member given is a bot. Please contact the server owner to ban, kick, or mute bots on the server.');
 };
@@ -88,6 +110,6 @@ module.exports.sendMemberUnbannable = function(channel) {
   channel.send('Member is not bannable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
 };
 
-module.exports.sendMemberUnkickable = function (channel) {
+module.exports.sendMemberUnkickable = function(channel) {
   channel.send('Member is not kickable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
 };

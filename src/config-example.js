@@ -1,4 +1,3 @@
-// View the Configuration documentation for more information
 module.exports = {
   prefix: '!',
   botCommandsChannel: 'bot_commands',
@@ -63,6 +62,14 @@ module.exports = {
     ban: {
       enabled: true,
       accessLevel: 'admin'
+    },
+    clear: {
+      enabled: true,
+      accessLevel: 'staff'
+    },
+    clearuser: {
+      enabled: true,
+      accessLevel: 'staff'
     },
     kick: {
       enabled: true,
