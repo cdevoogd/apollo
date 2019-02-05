@@ -13,7 +13,7 @@ const embeds = {
   
   delcommand: new Discord.RichEmbed()
     .setColor(colors.customCommands)
-    .setTitle(`${prefix}addcommand`)
+    .setTitle(`${prefix}delcommand`)
     .setDescription('Deletes a custom command from the server')
     .addField('Usage', `${prefix}delcommand [*command*] [*reply*]`),
 
@@ -72,15 +72,9 @@ const embeds = {
     .addField('Note 2', 'If a user was muted in a voice channel and then disconnects from that channel, the muted role will be removed, but they will still be server muted and deafened.'),
 };
 
-/**
- * Sends out a help message(embed) for the specified command to the channel given.
- * @param {TextChannel} channel - The channel to send the help embed to.
- * @param {String} command - The command whose embed to send.
- */
 module.exports.sendHelpEmbed = function(channel, command) {
   channel.send({ embed: embeds[command] });
 };
-
 
 module.exports.sendMissingArgument = function(channel, command, argument) {
   channel.send(`Command argument **[${argument}]** missing. Type \`${config.prefix}${command}\` for help.`);
@@ -94,7 +88,7 @@ module.exports.sendMaxExceeded = function(channel, command, argument) {
   channel.send(`Argument **[${argument}]** exceeds ${command}'s max value. Type \`${config.prefix}${command}\` for help.`);
 };
 
-module.exports.sendMinUnmet = function (channel, command, argument) {
+module.exports.sendMinUnmet = function(channel, command, argument) {
   channel.send(`Argument **[${argument}]** does not meet ${command}'s minimum value. Type \`${config.prefix}${command}\` for help.`);
 };
 

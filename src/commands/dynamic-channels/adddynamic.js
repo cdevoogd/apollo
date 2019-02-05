@@ -4,12 +4,13 @@
  */
 
 const apollo = require('../../apollo');
+const config = require('../../config');
 const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
 const staffChecks = require('../../helpers/staffChecks');
 const DynamicConfigurationModel = models.DynamicConfigurationModel;
 
-module.exports.exec = async function(config, message) {
+module.exports.exec = async function(message) {
   const splitMessageContent = message.content.split(' ');
   // Command Parameters
   const dynamicCategoryID = splitMessageContent[1];
@@ -17,12 +18,28 @@ module.exports.exec = async function(config, message) {
   const guildCategory = message.guild.channels.get(dynamicCategoryID);
   // Message Author Eligibility
   const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.adddynamic.accessLevel);
-  // Checks
-  if (!messageAuthorIsEligible) { return; }
-  if (!dynamicCategoryID) { commandHelp.sendHelpEmbed(message.channel, 'adddynamic'); return; }
-  if (!dynamicChannelName) { commandHelp.sendMissingArgument(message.channel, 'adddynamic', 'voiceChannelName'); return;}
-  if (!guildCategory) { message.channel.send(`${dynamicCategoryID} is not a valid category in this server.`); return; }
-  // Execute Command
+  
+  // SECTION Argument Checks
+  if (!messageAuthorIsEligible) { 
+    return; 
+  }
+  
+  if (!dynamicCategoryID) { 
+    commandHelp.sendHelpEmbed(message.channel, 'adddynamic'); 
+    return; 
+  }
+
+  if (!dynamicChannelName) { 
+    commandHelp.sendMissingArgument(message.channel, 'adddynamic', 'voiceChannelName'); 
+    return;
+  }
+
+  if (!guildCategory) { 
+    message.channel.send(`${dynamicCategoryID} is not a valid category in this server.`); 
+    return; 
+  }
+
+  // SECTION Command Execution
   const document = await DynamicConfigurationModel.findOne({ categoryID: dynamicCategoryID }).exec();
 
   if (document === null) {

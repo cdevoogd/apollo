@@ -3,9 +3,12 @@
  * Usage: !lock
  */
 
-module.exports.exec = async function(config, dynamicInfo, message) {
+const apollo = require('../../apollo');
+const config = require('../../config');
+
+module.exports.exec = async function(message) {
   const voiceChannel = message.member.voiceChannel;
-  const dynamicConfig = await dynamicInfo;
+  const dynamicConfig = await apollo.getDynamicConfig();
 
   if (config.commands.lock.commandChannelOnly) {
     if (message.channel.name === config.botCommandsChannel) { lockChannel(); }

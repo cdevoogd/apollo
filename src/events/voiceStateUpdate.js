@@ -6,11 +6,14 @@
  * channel open.
  */
 
-module.exports.run = async (config, dynamicInfo, memberOld, memberNew) => {
+const apollo = require('../apollo');
+const config = require('../config');
+
+module.exports.run = async function(memberOld, memberNew) {
   const channelBefore = memberOld.voiceChannel;
   const channelAfter = memberNew.voiceChannel;
   const roleEveryone = memberNew.guild.defaultRole;
-  const dynamicConfig = await dynamicInfo;
+  const dynamicConfig = await apollo.getDynamicConfig();
   let currentCategory;
   let extraChannelCount;
 

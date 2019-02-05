@@ -9,5 +9,6 @@ module.exports = {
   report: '#EEA514',
   mute: '#EEDD14',
   unmute: '#53EE14',
-  messageDeleted: 'AC14EE'
+  messageDeleted: '#AC14EE',
+  messageDeletedBulk: '#910707'
 };

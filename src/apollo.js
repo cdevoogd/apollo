@@ -1,4 +1,3 @@
-// Import Environment Variables (.env)
 require('dotenv').config();
 // Discord.JS
 const Discord = require('discord.js');
@@ -6,26 +5,34 @@ const client = new Discord.Client();
 // Event Handlers
 const eventReady = require('./events/ready');
 const eventMessage = require('./events/message');
-const eventMessagedDeleted = require('./events/messageDeleted');
+const eventMessageDeleteBulk = require('./events/messageDeleteBulk');
+const eventMessageDeleted = require('./events/messageDeleted');
 const eventVoiceStatusUpdate = require('./events/voiceStateUpdate');
-// Configs
-const config = require('./config');
 // Database
 const mongo = require('./database/operations');
-
-// Line to break up logs
-console.log('----------------------------------------------');
-
 // Connect and cache from db
 mongo.connect();
-let commands; 
-let dynamicInfo;
+let commands;
+let dynamicConfig;
 
-module.exports.cacheCommands = () => { commands = mongo.getCommands(); };
-module.exports.cacheDynamicInfo = () => { dynamicInfo = mongo.getDynamicInfo(); };
+module.exports.cacheCommands = async function() {
+  commands = mongo.getCommands();
+};
+
+module.exports.cacheDynamicConfig = async function() {
+  dynamicConfig = mongo.getDynamicConfig();
+};
+
+module.exports.getCommands = function() {
+  return commands;
+};
+
+module.exports.getDynamicConfig = function() {
+  return dynamicConfig;
+};
 
 exports.cacheCommands();
-exports.cacheDynamicInfo();
+exports.cacheDynamicConfig();
 
 // Discord Events
 client.on('ready', () => {
@@ -35,15 +42,19 @@ client.on('ready', () => {
 client.on('error', console.error);
 
 client.on('message', (message) => {
-  eventMessage.run(config, commands, dynamicInfo, client, message);
+  eventMessage.run(client, message);
+});
+
+client.on('messageDeleteBulk', (messages) => {
+  eventMessageDeleteBulk.run(messages);
 });
 
 client.on('messageDelete', (message) => {
-  eventMessagedDeleted.run(config, client, message);
+  eventMessageDeleted.run(client, message);
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  eventVoiceStatusUpdate.run(config, dynamicInfo, oldMember, newMember);
+  eventVoiceStatusUpdate.run(oldMember, newMember);
 });
 
 client.login(process.env.ACCESS_TOKEN);

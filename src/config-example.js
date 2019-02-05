@@ -1,21 +1,23 @@
 module.exports = {
   prefix: '!',
-  botCommandsChannel: 'bot_commands',
+  botCommandsChannel: 'bot-commands',
   deletedMessageLog: {
     enabled: true,
-    channelID: '536790972441559080'
+    logBulkDeletions: true,
+    channelID: '542089849717391360'
   },
   moderationLog: {
     enabled: true,
-    channelID: '536795137435631626'
+    channelID: '542089826313175040'
   },
   report: {
-    channelID: '538532549056790528'
+    channelID: '542089868331974666'
   },
   // Staff IDs
-  adminRoleID: '201908872867348480',
+  adminRoleID: '542090928911941663',
   staffRoleIDs: [
-    '201908872867348480'
+    '542090928911941663',
+    '542091015557742602'
   ],
   // Per-Command Configuration
   commands: {

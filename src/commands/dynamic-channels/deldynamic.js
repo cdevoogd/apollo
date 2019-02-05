@@ -4,21 +4,29 @@
  */
 
 const apollo = require('../../apollo');
+const config = require('../../config');
 const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
 const staffChecks = require('../../helpers/staffChecks');
 const DynamicConfigurationModel = models.DynamicConfigurationModel;
 
-module.exports.exec = async function(config, message) {
+module.exports.exec = async function(message) {
   const splitMessageContent = message.content.split(' ');
   // Command Parameters
   const dynamicCategoryID = splitMessageContent[1];
   // Message Author Eligibility
   const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.deldynamic.accessLevel);
-  // Checks
-  if (!messageAuthorIsEligible) { return; }
-  if (!dynamicCategoryID) { commandHelp.sendHelpEmbed(message.channel, 'deldynamic'); return; }
-  // Execute Command
+  
+  // SECTION Argument Checks
+  if (!messageAuthorIsEligible) { 
+    return; 
+  }
+  if (!dynamicCategoryID) { 
+    commandHelp.sendHelpEmbed(message.channel, 'deldynamic'); 
+    return; 
+  }
+
+  // SECTION Command Execution
   const document = await DynamicConfigurationModel.findOneAndDelete({ categoryID: dynamicCategoryID });
 
   if (document === null) {

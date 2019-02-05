@@ -1,3 +1,5 @@
+const config = require('../config');
+const apollo = require('../apollo');
 // Dynamic Channel Commands
 const lock = require('../commands/dynamic-channels/lock');
 const unlock = require('../commands/dynamic-channels/unlock');
@@ -16,29 +18,27 @@ const kick = require('../commands/moderation/kick');
 const mute = require('../commands/moderation/mute');
 const report = require('../commands/moderation/report');
 
-module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
+module.exports.run = function(client, message) {
   const messageContent = message.content.split(' ');
-  
   let msgCommand = messageContent[0].toLowerCase();
-  let msgCommandMinusPrefix;
 
   const commandDictionary = {
-    'lock': () => lock.exec(config, dynamicInfo, message),
-    'unlock': () => unlock.exec(config, dynamicInfo, message),
-    'adddynamic': () => adddynamic.exec(config, message),
-    'deldynamic': () => deldynamic.exec(config, message),
+    'lock': () => lock.exec(message),
+    'unlock': () => unlock.exec(message),
+    'adddynamic': () => adddynamic.exec(message),
+    'deldynamic': () => deldynamic.exec(message),
 
-    'commands': () => commands.exec(Object.keys(commandDictionary), customCommands, message),
-    'addcommand': () => addcommand.exec(config, message),
-    'editcommand': () => editcommand.exec(config, message),
-    'delcommand': () => delcommand.exec(config, message),
+    'commands': () => commands.exec(commandDictionary, message),
+    'addcommand': () => addcommand.exec(message),
+    'editcommand': () => editcommand.exec(message),
+    'delcommand': () => delcommand.exec(message),
 
-    'ban': () => ban.exec(config, message),
-    'clear': () => clear.exec(config, message),
-    'clearuser': () => clearuser.exec(config, message),
-    'kick': () => kick.exec(config, message),
-    'mute': () => mute.exec(config, message),
-    'report': () => report.exec(config, message)
+    'ban': () => ban.exec(message),
+    'clear': () => clear.exec(message),
+    'clearuser': () => clearuser.exec(message),
+    'kick': () => kick.exec(message),
+    'mute': () => mute.exec(message),
+    'report': () => report.exec(message)
     
   };
 
@@ -47,7 +47,7 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
   }
 
   async function checkCustomCommands() {
-    const commands = await customCommands;
+    const commands = await apollo.getCommands();
     for (let word of messageContent) {
       if (commands.hasOwnProperty(word)) {
         message.channel.send(commands[word]);
@@ -55,13 +55,14 @@ module.exports.run = (config, customCommands, dynamicInfo, client, message) => {
     }
   }
 
-  // Stop the bot from replying to itself
   if (message.author === client.user) return;
-  // Only run in text channels, not DMs
   if (message.channel.type !== 'text') return;
-  // Check for prefix, and set variable if it is there.
-  if (msgCommand.startsWith(config.prefix)) msgCommandMinusPrefix = msgCommand.slice(1);
-  // If the command is in the dictionary, run it, else, check for custom commands.
-  (commandDictionary.hasOwnProperty(msgCommandMinusPrefix)) ? runCommand(msgCommandMinusPrefix) : checkCustomCommands();  
+  if (msgCommand.startsWith(config.prefix)) {
+    if (commandDictionary.hasOwnProperty(msgCommand.slice(1))) {
+      runCommand(msgCommand.slice(1));
+      return;
+    } 
+  }
+  checkCustomCommands();  
 };
 

@@ -5,7 +5,7 @@
 
 const moderationLogging = require('../../helpers/moderationLogging');
 
-module.exports.exec = async function(config, message) {
+module.exports.exec = async function(message) {
   const dmChannel = await message.member.createDM();
   // Filter & Options for awaitMessages()
   const filter = msg => msg.author.id === message.author.id;

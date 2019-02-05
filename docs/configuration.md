@@ -4,6 +4,7 @@ Apollo uses a `.env` file to contain his Discord access token and MongoDB connec
 Create a `.env` file inside of the main `apollo` directory with the following keys:
 ```
 ACCESS_TOKEN=
+PASTEE_TOKEN=
 MONGO_HOST=
 MONGO_DB_NAME=
 MONGO_USER=
@@ -11,6 +12,9 @@ MONGO_PASS=
 ```
 
 `ACCESS_TOKEN` is where you will need to put the bot’s access token for Discord. This can be found in the [Discord Developer Dashboard](https://discordapp.com/developers/applications/).
+
+`PASTEE_TOKEN` is an API access token to [paste.ee](https://paste.ee/). This token is used to create logs of bulk message deletions, as they will not fit into a Discord message.
+ You can get a token for this site simply by registering.
 
 The other keys are where your MongoDB connection information is stored.
 `MONGO_USER` and `MONGO_PASS` are your username and password used to authenticate with the database.
