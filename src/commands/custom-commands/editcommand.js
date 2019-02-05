@@ -4,23 +4,36 @@
  */
 
 const apollo = require('../../apollo');
+const config = require('../../config');
 const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
 const staffChecks = require('../../helpers/staffChecks');
 const CommandModel = models.CommandModel;
 
-module.exports.exec = async function(config, message) {
+module.exports.exec = async function(message) {
   const splitMessageContent = message.content.split(' ');
   // Command Parameters
   const commandToEdit = splitMessageContent[1];
   const editedCommandReply = splitMessageContent.slice(2).join(' ');
   // Message Author Eligibility
   const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.editcommand.accessLevel);
-  // Checks
-  if (!messageAuthorIsEligible) { return; }
-  if (!commandToEdit) { commandHelp.sendHelpEmbed(message.channel, 'editcommand'); return; }
-  if (!editedCommandReply) { commandHelp.sendMissingArgument(message.channel, 'editcommand', 'reply'); return; }
-  // Execute Command
+  
+  // SECTION Argument Checks
+  if (!messageAuthorIsEligible) { 
+    return; 
+  }
+
+  if (!commandToEdit) { 
+    commandHelp.sendHelpEmbed(message.channel, 'editcommand'); 
+    return; 
+  }
+
+  if (!editedCommandReply) { 
+    commandHelp.sendMissingArgument(message.channel, 'editcommand', 'reply'); 
+    return; 
+  }
+
+  // SECTION Command Execution
   const document = await CommandModel.findOne({ command: commandToEdit }).exec();
 
   if (document === null) {

@@ -6,15 +6,16 @@
 
 const Discord = require('discord.js');
 const colors = require('../helpers/colors');
+const config = require('../config');
 
-module.exports.run = (config, client, message) => {
-  let prefixedCommand;
-  // Don't run if disabled
+module.exports.run = function(client, message) {
   if (!config.deletedMessageLog.enabled) return;
   // Stop logging when the bot deletes certain command messages.
-  if (message.content.startsWith(config.prefix)) { prefixedCommand = message.content.slice(1).split(' ')[0]; }
-  if (['report', 'clear', 'clearuser'].includes(prefixedCommand)) return;
-
+  if (message.content.startsWith(config.prefix)) { 
+    if (['report', 'clear', 'clearuser'].includes(message.content.slice(1).split(' ')[0]));
+    return;
+  }
+  
   (message.embeds.length === 1) ? logEmbedDeletion(config, message) : logMessageDeletion(config, client, message);  
 };
 

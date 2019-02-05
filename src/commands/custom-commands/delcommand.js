@@ -4,21 +4,30 @@
  */
 
 const apollo = require('../../apollo');
+const config = require('../../config');
 const commandHelp = require('../../helpers/commandHelp');
 const models = require('../../database/models');
 const staffChecks = require('../../helpers/staffChecks');
 const CommandModel = models.CommandModel;
 
-module.exports.exec = async function(config, message) {
+module.exports.exec = async function(message) {
   const splitMessageContent = message.content.split(' ');
   // Command Parameters
   const commandToDelete = splitMessageContent[1];
   // Message Author Eligibility
   const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.delcommand.accessLevel);
-  // Checks
-  if (!messageAuthorIsEligible) { return; }
-  if (!commandToDelete) { commandHelp.sendHelpEmbed(message.channel, 'delcommand'); return; }
-  // Execute Command
+  
+  // SECTION Argument Checks
+  if (!messageAuthorIsEligible) { 
+    return; 
+  }
+
+  if (!commandToDelete) { 
+    commandHelp.sendHelpEmbed(message.channel, 'delcommand'); 
+    return; 
+  }
+
+  // SECTION Command Execution
   const document = await CommandModel.findOneAndDelete({ command: commandToDelete });
   if (document === null) {
     message.channel.send('Command not found.');

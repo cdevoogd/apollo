@@ -5,7 +5,7 @@
  * initialization info to the console.
  */
 
-module.exports.run = (client) => {
+module.exports.run = function(client) {
   const currentTime = new Date();
   console.log('Start Time: ' + currentTime.toUTCString());
   console.log(`Bot ready and logged in as ${client.user.tag}!`);

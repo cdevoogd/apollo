@@ -1,18 +1,8 @@
-/**
- * @module Operations
- * @description Manages the mongo connection and operations.
- */
-
 require('dotenv').config();
 const mongoose = require('mongoose');
 const models = require('./models');
 
-/**
- * @function connect
- * @description Connects to MongoDB using environment variables.
- * @returns {undefined}
- */
-module.exports.connect = () => {
+module.exports.connect = async function() {
   const dbUser = process.env.MONGO_USER;
   const dbPass = process.env.MONGO_PASS;
   const dbHost = process.env.MONGO_HOST;
@@ -28,12 +18,7 @@ module.exports.connect = () => {
     });
 };
 
-/**
- * @function getCommands
- * @description Retrieves all of the commands in the 'commands' database collection and returns them for use later.
- * @returns {Promise} 
- */
-module.exports.getCommands = async () => {
+module.exports.getCommands = async function() {
   let output = {};
   const result = await models.CommandModel.find().exec();
   for (let obj of result) {
@@ -42,12 +27,7 @@ module.exports.getCommands = async () => {
   return output;
 };
 
-/**
- * @function getDynamicInfo
- * @description Queries and sorts the dynamics collection into an object structured (categoryID: channelName) and returns the promise.
- * @returns {Promise}
- */
-module.exports.getDynamicInfo = async () => {
+module.exports.getDynamicConfig = async function() {
   let output = {};
   const result = await models.DynamicConfigurationModel.find().exec();
   for (let obj of result) {
