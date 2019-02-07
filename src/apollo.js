@@ -39,7 +39,9 @@ client.on('ready', () => {
   eventReady.run(client);
 });
 
-client.on('error', console.error);
+client.on('error', (err) => {
+  console.error(err.message);
+});
 
 client.on('message', (message) => {
   eventMessage.run(client, message);
