@@ -7,7 +7,6 @@
  */
 
 const apollo = require('../apollo');
-const config = require('../config');
 
 module.exports.run = async function(memberOld, memberNew) {
   const channelBefore = memberOld.voiceChannel;
@@ -69,6 +68,7 @@ module.exports.run = async function(memberOld, memberNew) {
   function unlockLockedChannel(currentChannel) {
     if (!currentChannel.permissionsFor(roleEveryone).toArray().includes('CONNECT')) {
       currentChannel.overwritePermissions(roleEveryone, { CONNECT: null });
+      currentChannel.edit({ name: dynamicConfig[currentChannel.parentID] });
     }
 
   }
