@@ -16,10 +16,10 @@ module.exports.exec = async function(message) {
     lockChannel();
   }
 
-  function lockChannel() {
+  async function lockChannel() {
     if (voiceChannel && dynamicConfig.hasOwnProperty(voiceChannel.parentID)) {
-      voiceChannel.overwritePermissions(message.guild.defaultRole, { CONNECT: false });
-      voiceChannel.edit({ name: dynamicConfig[voiceChannel.parentID] + ' (Locked)'});
+      await voiceChannel.overwritePermissions(message.guild.defaultRole, { CONNECT: false });
+      await voiceChannel.edit({ name: dynamicConfig[voiceChannel.parentID] + ' (Locked)' });
       message.react('🔒');
     }
   }
