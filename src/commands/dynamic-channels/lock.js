@@ -19,7 +19,6 @@ module.exports.exec = async function(message) {
   function lockChannel() {
     if (voiceChannel && dynamicConfig.hasOwnProperty(voiceChannel.parentID)) {
       voiceChannel.overwritePermissions(message.guild.defaultRole, { CONNECT: false });
-      voiceChannel.overwritePermissions(config.adminRoleID, { CONNECT: true });
       message.react('🔒');
     }
   }

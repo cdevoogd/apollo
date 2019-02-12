@@ -69,7 +69,6 @@ module.exports.run = async function(memberOld, memberNew) {
   function unlockLockedChannel(currentChannel) {
     if (!currentChannel.permissionsFor(roleEveryone).toArray().includes('CONNECT')) {
       currentChannel.overwritePermissions(roleEveryone, { CONNECT: null });
-      currentChannel.overwritePermissions(config.adminRoleID, { CONNECT: null });
     }
 
   }
