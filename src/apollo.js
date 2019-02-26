@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const database = require('./database');
 const events = require('./events');
 
-const client = Discord.Client();
+const client = new Discord.Client();
 
 database.connect();
 
@@ -14,4 +14,4 @@ client
   .on('messageDeleteBulk', messages => events.messageDeleteBulk.process(messages))
   .on('ready', () => events.ready.process(client))
   .on('voiceStateUpdate', (memberBefore, memberAfter) => events.voiceStateUpdate.process(memberBefore, memberAfter))
-  .login(process.env.ACCESS_TOKEN);
+  .login(process.env.DISCORD_TOKEN);
