@@ -1,10 +1,11 @@
 require('dotenv').config();
+const logger = require('../internal/logger');
 const models = require('./models');
 const mongoose = require('mongoose');
 
 module.exports.connect = function () {
   mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true })
-    .catch(err => console.error(`Database connection failed: ${err.stack}`));
+    .catch(err => logger.logError(err));
 };
 
 module.exports.getCommands = function () {
@@ -14,7 +15,7 @@ module.exports.getCommands = function () {
       commands.forEach(command => formattedCommandOutput[command.command] = command.reply);
       return formattedCommandOutput;
     })
-    .catch(err => console.error(err));
+    .catch(err => logger.logError(err));
 };
 
 module.exports.getDynamicConfigs = function () {
@@ -24,5 +25,5 @@ module.exports.getDynamicConfigs = function () {
       dynamicConfigs.forEach(config => formattedConfigOutput[config.categoryID] = config.voiceChannelName);
       return formattedConfigOutput;
     })
-    .catch(err => console.error(err));
+    .catch(err => logger.logError(err));
 };
