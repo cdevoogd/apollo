@@ -1,8 +1,6 @@
 {
   "name": "apollo",
-  "version": "1.0.0",
-  "description": "A personalized bot for Discord.",
-  "main": "./src/apollo.js",
+  "description": "A custom Discord bot built using discord.js",
   "scripts": {
     "start": "node './src/apollo.js'"
   },
@@ -11,7 +9,7 @@
     "url": "git+https://github.com/cdevoogd/apollo.git"
   },
   "author": "cdevoogd",
-  "license": "",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/cdevoogd/apollo/issues"
   },
@@ -22,7 +20,7 @@
   "dependencies": {
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
-    "mongoose": "^5.4.1",
+    "mongoose": "^5.4.15",
     "request": "^2.88.0"
   }
 }
