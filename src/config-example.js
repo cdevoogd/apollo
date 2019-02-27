@@ -1,34 +1,44 @@
 module.exports = {
   prefix: '!',
-  botCommandsChannel: 'bot-commands',
-  deletedMessageLog: {
+  botCommandsChannelName: 'bot-commands',
+  // Staff IDS
+  adminRoleID: '542090928911941663',
+  staffRoleIDs: ['542090928911941663', '542091015557742602'],
+  // Logging
+  logModerationActions: {
     enabled: true,
-    logBulkDeletions: true,
-    channelID: '542089849717391360'
-  },
-  moderationLog: {
-    enabled: true,
-    channelID: '542089826313175040'
-  },
-  report: {
     channelID: '542089868331974666'
   },
-  // Staff IDs
-  adminRoleID: '542090928911941663',
-  staffRoleIDs: [
-    '542090928911941663',
-    '542091015557742602'
-  ],
-  // Per-Command Configuration
+  logMessageDeleted: {
+    enabled: true,
+    enableForBulkDeletions: true,
+    channelID: '542089849717391360'
+  },
+  logReports: {
+    // To disable reports, simply disable the command.
+    channelID: '542089868331974666'
+  },
+  // Command Configuration
   commands: {
-    // accessLevel determines which roles can use the command.
-    //  'admin' = adminRoleID,
-    //  'staff' = staffRoleIDs
+    /**
+     * Access Levels:
+     *  - admin: Available to those with the role set in 'adminRoleID'
+     *  - staff: Available to those with the roles set in 'staffRoleIDs'
+     * Command Channel Only:
+     *  - Specifies whether this command will only work if used in the channel set in 'botCommandsChannelName'
+     */
 
-    // Custom Command Commands
-    commands: {
-      enabled: true,
+    // General Commands
+    help: {
+      enabled: true
     },
+    members: {
+      enabled: true
+    },
+    report: {
+      enabled: true
+    },
+    // Custom Command Commands
     addcommand: {
       enabled: true,
       accessLevel: 'admin'
@@ -41,7 +51,6 @@ module.exports = {
       enabled: true,
       accessLevel: 'admin'
     },
-
     // Dynamic Channel Commands
     lock: {
       enabled: true,
@@ -59,7 +68,6 @@ module.exports = {
       enabled: true,
       accessLevel: 'admin'
     },
-
     // Moderation Commands
     ban: {
       enabled: true,
@@ -80,10 +88,6 @@ module.exports = {
     mute: {
       enabled: true,
       accessLevel: 'staff'
-    },
-    report: {
-      enabled: true,
-      // Ensure that the report channel ID is configured at the top if enabled.
     }
   }
 };
