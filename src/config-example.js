@@ -2,7 +2,7 @@ module.exports = {
   prefix: '!',
   botCommandsChannelName: 'bot-commands',
   // Staff IDS
-  adminRoleID: '542090928911941663',
+  adminRoleIDs: ['542090928911941663'],
   staffRoleIDs: ['542090928911941663', '542091015557742602'],
   // Logging
   logModerationActions: {

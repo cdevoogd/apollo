@@ -10,7 +10,7 @@ module.exports.isMemberStaff = function (member) {
 
 module.exports.isMemberAdmin = function (member) {
   member.roles.keyArray().forEach(roleID => {
-    if (roleID === config.adminRoleID) { return true; }
+    if (config.adminRoleIDs.includes(roleID)) { return true; }
   });
 
   return false;
