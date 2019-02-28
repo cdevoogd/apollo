@@ -22,16 +22,15 @@ class DelDynamicCommand extends Command {
   }
 
   async process () {
-    if (this.validate()) {
-      const document = await DynamicConfiguration.findOneAndDelete({ categoryID: this.categoryID });
+    if (!this.validate()) { return; }
 
-      if (document === null) {
-        this.say(`Configuration for ${this.categoryID} not found.`);
-      } else {
-        cache.cacheDynamicConfigs();
-        logger.logInfo(`Dynamic configuration removed: [ID: ${this.categoryID}]`);
-        this.say('Configuration deleted.');
-      }
+    const document = await DynamicConfiguration.findOneAndDelete({ categoryID: this.categoryID });
+    if (document === null) {
+      this.say(`Configuration for ${this.categoryID} not found.`);
+    } else {
+      cache.cacheDynamicConfigs();
+      logger.logInfo(`Dynamic configuration removed: [ID: ${this.categoryID}]`);
+      this.say('Configuration deleted.');
     }
   }
 

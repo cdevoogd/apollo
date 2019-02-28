@@ -24,17 +24,16 @@ class AddDynamicCommand extends Command {
   }
 
   async process () {
-    if (this.validate()) {
-      const document = await DynamicConfiguration.findOne({ categoryID: this.categoryID }).exec();
+    if (!this.validate()) { return; }
+    const document = await DynamicConfiguration.findOne({ categoryID: this.categoryID }).exec();
 
-      if (document === null) {
-        await this.writeNewConfiguration();
-        cache.cacheDynamicConfigs();
-        logger.logInfo(`Dynamic configuration added: [Category: ${this.category.name}, ID: ${this.categoryID}]`);
-        this.say('Configuration added.');
-      } else {
-        this.say(`Configuration for ${this.category.name} already exists.`);
-      }
+    if (document === null) {
+      await this.writeNewConfiguration();
+      cache.cacheDynamicConfigs();
+      logger.logInfo(`Dynamic configuration added: [Category: ${this.category.name}, ID: ${this.categoryID}]`);
+      this.say('Configuration added.');
+    } else {
+      this.say(`Configuration for ${this.category.name} already exists.`);
     }
   }
 
