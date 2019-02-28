@@ -1,12 +1,15 @@
 const colors = require('../internal/colors');
 const config = require('../config');
 const Discord = require('discord.js');
+const staffChecks = require('../internal/staff-checks');
 
 module.exports = class Command {
   constructor (message, info) {
     this.prefix = config.prefix;
+    this.authorIsEligible = staffChecks.isMemberEligible(message.member, config.commands[info.name].accessLevel);
 
     this.message = message;
+    this.arguments = message.content.split(' ').filter(word => word !== '').slice(1);
     this.name = info.name;
     this.description = info.description;
     this.usage = info.usage;
