@@ -21,6 +21,7 @@ module.exports.process = function (client, message) {
     const command = keyword.slice(1).toLowerCase();
     if (commands[command] && config.commands[command].enabled) {
       commands[command].exec(message);
+      return;
     }
   }
 
