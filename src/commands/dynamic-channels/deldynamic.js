@@ -1,5 +1,5 @@
 const cache = require('../../internal/cache');
-const Command = require('../Command');
+const CommandBase = require('../CommandBase');
 const { DynamicConfiguration } = require('../../database');
 const logger = require('../../internal/logger');
 
@@ -14,7 +14,7 @@ module.exports.exec = function (message) {
   command.process();
 };
 
-class DelDynamicCommand extends Command {
+class DelDynamicCommand extends CommandBase {
   constructor (message, info) {
     super(message, info);
 

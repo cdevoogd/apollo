@@ -1,5 +1,5 @@
 const cache = require('../../internal/cache');
-const Command = require('../Command');
+const CommandBase = require('../CommandBase');
 const config = require('../../config');
 const logger = require('../../internal/logger');
 
@@ -15,7 +15,7 @@ module.exports.exec = async function (message) {
   command.process();
 };
 
-class UnlockCommand extends Command {
+class UnlockCommand extends CommandBase {
   constructor (message, info, dynamicConfigs) {
     super(message, info);
 

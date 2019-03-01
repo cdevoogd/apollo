@@ -1,4 +1,4 @@
-const Command = require('../Command');
+const CommandBase = require('../CommandBase');
 
 module.exports.info = {
   name: 'members',
@@ -11,7 +11,7 @@ module.exports.exec = function (message) {
   command.process();
 };
 
-class MembersCommand extends Command {
+class MembersCommand extends CommandBase {
   constructor (message, info) {
     super(message, info);
   }
