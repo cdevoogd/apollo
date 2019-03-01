@@ -1,4 +1,5 @@
 // General Commands
+module.exports.help = require('./general/help');
 module.exports.members = require('./general/members');
 // Custom Command Commands
 module.exports.addcommand = require('./custom-commands/addcommand');
