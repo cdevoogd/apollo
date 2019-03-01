@@ -1,17 +1,17 @@
 const config = require('../config');
 
 module.exports.isMemberStaff = function (member) {
-  member.roles.keyArray().forEach(roleID => {
+  for (const roleID of member.roles.keyArray()) {
     if (config.staffRoleIDs.includes(roleID)) { return true; }
-  });
+  }
 
   return false;
 };
 
 module.exports.isMemberAdmin = function (member) {
-  member.roles.keyArray().forEach(roleID => {
+  for (const roleID of member.roles.keyArray()) {
     if (config.adminRoleIDs.includes(roleID)) { return true; }
-  });
+  }
 
   return false;
 };

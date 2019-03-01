@@ -31,15 +31,15 @@ module.exports = class Command {
       helpEmbed.addField('Note', this.note);
     }
 
-    this.message.channel.send({ embed: helpEmbed });
+    this.say({ embed: helpEmbed });
   }
 
   sendMissingArgument (argument) {
-    this.message.channel.send(`Missing argument ${inlineCode(argument)}. Type ${inlineCode(this.prefix + this.name)} for help.`);
+    this.say(`Missing argument ${inlineCode(argument)}. Type ${inlineCode(this.prefix + this.name)} for help.`);
   }
 
   sendInvalidArgument (argument) {
-    this.message.channel.send(`Invalid argument ${inlineCode(argument)}. Type ${inlineCode(this.prefix + this.name)} for help.`);
+    this.say(`Invalid argument ${inlineCode(argument)}. Type ${inlineCode(this.prefix + this.name)} for help.`);
   }
 };
 
