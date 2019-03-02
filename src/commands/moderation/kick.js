@@ -51,7 +51,7 @@ class KickCommand extends CommandBase {
     }
 
     if (this.member.user.bot) {
-      this.sendBotWarning('kick');
+      this.sendBotWarning();
       return false;
     } 
 
