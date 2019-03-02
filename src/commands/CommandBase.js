@@ -41,6 +41,18 @@ module.exports = class Command {
   sendInvalidArgument (argument) {
     this.say(`Invalid argument ${inlineCode(argument)}. Type ${inlineCode(this.prefix + this.name)} for help.`);
   }
+
+  sendBotWarning () {
+    this.say(`The person you are trying to kick/ban is a bot. Please contact the server owner to remove bots directly through Discord to prevent issues.`);
+  }
+
+  sendMemberUnbannable () {
+    this.say('Member is not bannable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
+  }
+
+  sendMemberUnkickable () {
+    this.say('Member is not kickable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
+  }
 };
 
 const inlineCode = function (string) {
