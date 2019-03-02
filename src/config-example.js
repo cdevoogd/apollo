@@ -7,16 +7,16 @@ module.exports = {
   // Logging
   logModerationActions: {
     enabled: true,
-    channelID: '542089868331974666'
+    channelID: '551521788056698884'
   },
   logMessageDeleted: {
     enabled: true,
-    enableForBulkDeletions: true,
-    channelID: '542089849717391360'
+    enabledForBulkDeletions: true,
+    channelID: '551521826371665942'
   },
   logReports: {
     // To disable reports, simply disable the command.
-    channelID: '542089868331974666'
+    channelID: '551521803273633814'
   },
   // Command Configuration
   commands: {

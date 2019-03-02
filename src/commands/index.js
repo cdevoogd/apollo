@@ -12,4 +12,5 @@ module.exports.lock = require('./dynamic-channels/lock');
 module.exports.unlock = require('./dynamic-channels/unlock');
 // Moderation Commands
 module.exports.ban = require('./moderation/ban');
+module.exports.clear = require('./moderation/clear');
 module.exports.kick = require('./moderation/kick');

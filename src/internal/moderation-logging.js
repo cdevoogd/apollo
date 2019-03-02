@@ -3,7 +3,7 @@ const colors = require('./colors');
 const config = require('../config');
 
 const moderationLoggingEnabled = config.logModerationActions.enabled;
-const bulkDeletionLoggingEnabled = config.logMessageDeleted.bulkDeletionLoggingEnabled;
+const bulkDeletionLoggingEnabled = config.logMessageDeleted.enabledForBulkDeletions;
 
 const getModerationChannel = message => message.guild.channels.get(config.logModerationActions.channelID);
 const getReportLogChannel = message => message.guild.channel.get(config.logReports.channelID);

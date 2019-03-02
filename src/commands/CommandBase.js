@@ -14,10 +14,13 @@ module.exports = class Command {
     this.description = info.description;
     this.usage = info.usage;
     this.note = info.note;
+
+    this.clearMinimum = 2;
+    this.clearMaximum = 100;
   }
 
   say (message) {
-    this.message.channel.send(message);
+    return this.message.channel.send(message);
   }
 
   sendHelpEmbed () {
@@ -43,7 +46,7 @@ module.exports = class Command {
   }
 
   sendBotWarning () {
-    this.say(`The person you are trying to kick/ban is a bot. Please contact the server owner to remove bots directly through Discord to prevent issues.`);
+    this.say('The person you are trying to kick/ban is a bot. Please contact the server owner to remove bots directly through Discord to prevent issues.');
   }
 
   sendMemberUnbannable () {
@@ -52,6 +55,14 @@ module.exports = class Command {
 
   sendMemberUnkickable () {
     this.say('Member is not kickable. They may have higher permissions than the bot, or the bot\'s permissions may be broken.');
+  }
+
+  sendMinimumUnmet (argument) {
+    this.say(`Argument ${inlineCode(argument)} doesn't meet its minimum possible value. Type ${inlineCode(this.prefix + this.name)} for help.`);
+  }
+
+  sendMaximumExceeded (argument) {
+    this.say(`Argument ${inlineCode(argument)} exceeds its maximum possible value. Type ${inlineCode(this.prefix + this.name)} for help.`);
   }
 };
 
