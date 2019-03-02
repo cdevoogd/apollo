@@ -46,7 +46,7 @@ module.exports = class Command {
   }
 
   sendBotWarning () {
-    this.say('The person you are trying to kick/ban is a bot. Please contact the server owner to remove bots directly through Discord to prevent issues.');
+    this.say('Member is a bot. Please contact the server owner to manage bots directly through Discord to prevent issues.');
   }
 
   sendMemberUnbannable () {

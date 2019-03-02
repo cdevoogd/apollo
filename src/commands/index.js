@@ -15,3 +15,4 @@ module.exports.ban = require('./moderation/ban');
 module.exports.clear = require('./moderation/clear');
 module.exports.clearuser = require('./moderation/clearuser');
 module.exports.kick = require('./moderation/kick');
+module.exports.mute = require('./moderation/mute');
