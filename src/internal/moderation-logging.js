@@ -6,7 +6,7 @@ const moderationLoggingEnabled = config.logModerationActions.enabled;
 const bulkDeletionLoggingEnabled = config.logMessageDeleted.enabledForBulkDeletions;
 
 const getModerationChannel = message => message.guild.channels.get(config.logModerationActions.channelID);
-const getReportLogChannel = message => message.guild.channel.get(config.logReports.channelID);
+const getReportLogChannel = message => message.guild.channels.get(config.logReports.channelID);
 
 module.exports.logBan = (message, member, reason) => {
   if (!moderationLoggingEnabled) { return; }
@@ -60,7 +60,6 @@ module.exports.logMute = (message, member, reason, time) => {
 module.exports.logReport = (message, member, reason) => {
   const logEmbed = new Discord.RichEmbed()
     .setColor(colors.report)
-    .setThumbnail(member.user.displayAvatarURL)
     .setTitle('Report Filed')
     .addField('Member:', member)
     .addField('Reason:', reason)
