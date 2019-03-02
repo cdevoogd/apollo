@@ -5,4 +5,10 @@ module.exports = {
   imageDeletedEmbed: '#5fd67e',
   embedDeletedEmbed: '#615fd6',
   messageDeletedEmbed: '#5f89d6',
+  // Moderation Log Colors
+  ban: '#ff3e33',
+  clear: '#fbff33',
+  kick: '#ff8733',
+  mute: '#ff33a8',
+  report: '#339eff'
 };
