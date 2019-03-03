@@ -1,54 +1,62 @@
-/**
- * Command - !clear
- * Usage: !clear [messageCount]
- */
+const CommandBase = require('../CommandBase');
+const logger = require('../../internal/logger');
+const moderationLogging = require('../../internal/moderation-logging');
 
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const moderationLogging = require('../../helpers/moderationLogging');
-const staffChecks = require('../../helpers/staffChecks');
-
-module.exports.exec = async function (message) {
-  const splitMessageContent = message.content.split(' ').filter(word => word !== '');
-  // Command Parameters
-  const clearCount = parseInt(splitMessageContent[1]);
-  const maxCount = 100;
-  const minCount = 2;
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.clear.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) {
-    return; 
-  }
-
-  if (!splitMessageContent[1]) { 
-    commandHelp.sendHelpEmbed(message.channel, 'clear'); 
-    return; 
-  }
-
-  if (isNaN(clearCount)) { 
-    commandHelp.sendInvalidArgument(message.channel, 'clear', 'messageCount'); 
-    return; 
-  }
-
-  if (clearCount > maxCount) { 
-    commandHelp.sendMaxExceeded(message.channel, 'clear', 'messageCount'); 
-    return; 
-  }
-
-  if (clearCount < minCount) { 
-    commandHelp.sendMinUnmet(message.channel, 'clear', 'messageCount'); 
-    return; 
-  }
-  
-  // SECTION Command Execution
-  message.delete();
-  message.channel.bulkDelete(clearCount);
-  moderationLogging.logClear(message, clearCount);
-  message.channel.send(`${clearCount} messages deleted.`)
-    .then(message => {
-      // Delete after 3 seconds
-      setTimeout(() => { message.delete(); }, 3000);
-    });
+module.exports.info = {
+  name: 'clear',
+  description: 'Deletes a specified number of messages from the server',
+  usage: 'clear [messageCount]',
+  note: 'Restrictions: Only messages less than two weeks old can be deleted, Message count must be between 2-100'
 };
+
+module.exports.exec = function (message) {
+  const command = new ClearCommand(message, exports.info);
+  command.process();
+};
+
+class ClearCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.messageCount = parseInt(this.arguments[0]);
+  }
+
+  async process () {
+    if (!this.validate()) { return; }
+
+    // Deleting the command call so that the messageCount is accurate.
+    await this.message.delete();
+    this.message.channel.bulkDelete(this.messageCount);
+    moderationLogging.logClear(this.message, this.messageCount);
+    // Delete this message after 3 seconds.
+    this.say(`${this.messageCount} messages deleted.`)
+      .then(message => { setTimeout(() => { message.delete(); }, 3000); })
+      .catch(err => logger.logError(err));
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.arguments[0]) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    if (Number.isNaN(this.messageCount)) {
+      this.sendInvalidArgument('messageCount');
+      return false;
+    }
+
+    if (this.messageCount < this.clearMinimum) {
+      this.sendMinimumUnmet('messageCount');
+      return false;
+    }
+
+    if (this.messageCount > this.clearMaximum) {
+      this.sendMaximumExceeded('messageCount');
+      return false;
+    }
+
+    return true;
+  }
+}

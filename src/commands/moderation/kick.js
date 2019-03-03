@@ -1,58 +1,65 @@
-/**
- * Command - !kick
- * Usage: !kick [@member/userID] [reason]
- */
+const CommandBase = require('../CommandBase');
+const logger = require('../../internal/logger');
+const moderationLogging = require('../../internal/moderation-logging');
 
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const moderationLogging = require('../../helpers/moderationLogging');
-const staffChecks = require('../../helpers/staffChecks');
-
-module.exports.exec = async function (message) {
-  const splitMessageContent = message.content.split(' ').filter(word => word !== '');
-  // Command Parameters
-  const kickMember = message.mentions.members.first() || message.guild.members.get(splitMessageContent[1]);
-  const kickReason = splitMessageContent.slice(2).join(' ');
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.kick.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) { 
-    return; 
-  }
-
-  if (!splitMessageContent[1]) { 
-    commandHelp.sendHelpEmbed(message.channel, 'kick'); 
-    return; 
-  }
-
-  if (!kickMember) { 
-    commandHelp.sendInvalidArgument(message.channel, 'kick', 'member'); 
-    return; 
-  }
-
-  if (kickMember.user.bot) { 
-    commandHelp.sendMemberIsBot(message.channel); 
-    return; 
-  }
-
-  if (!kickReason) { 
-    commandHelp.sendMissingArgument(message.channel, 'kick', 'reason'); 
-    return; 
-  }
-
-  if (staffChecks.isMemberStaff(kickMember)) { 
-    commandHelp.sendMemberIsStaff(message.channel); 
-    return; 
-  }
-
-  if (!kickMember.kickable) { 
-    commandHelp.sendMemberUnkickable(message.channel); 
-    return; 
-  }
-  
-  // SECTION Command Execution
-  await kickMember.kick(kickReason);
-  message.react('✅');
-  moderationLogging.logKick(message, kickMember, kickReason);
+module.exports.info = {
+  name: 'kick',
+  description: 'Kicks the specified member from the server.',
+  usage: 'kick [@member/userID] [reason]'
 };
+
+module.exports.exec = function (message) {
+  const command = new KickCommand(message, exports.info);
+  command.process();
+};
+
+class KickCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.member = message.mentions.members.first() || message.guild.members.get(this.arguments[0]);
+    this.reason = this.arguments.slice(1).join(' ');
+  }
+
+  process () {
+    if (!this.validate()) { return; }
+
+    this.member.kick(this.reason) 
+      .then(() => {
+        this.message.react('✅');
+        moderationLogging.logKick(this.message, this.member, this.reason);
+      })
+      .catch(err => logger.logError(err));
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.arguments[0]) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    if (!this.member) {
+      this.sendInvalidArgument('member');
+      return false;
+    }
+
+    if (!this.reason) {
+      this.sendMissingArgument('reason');
+      return false;
+    }
+
+    if (this.member.user.bot) {
+      this.sendBotWarning();
+      return false;
+    } 
+
+    if (!this.member.kickable) {
+      this.sendMemberUnkickable();
+      return false;
+    }
+
+    return true;
+  }
+}

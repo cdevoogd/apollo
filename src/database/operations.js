@@ -1,38 +1,27 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
+const logger = require('../internal/logger');
 const models = require('./models');
+const mongoose = require('mongoose');
 
-module.exports.connect = async function() {
-  const dbUser = process.env.MONGO_USER;
-  const dbPass = process.env.MONGO_PASS;
-  const dbHost = process.env.MONGO_HOST;
-  const dbName = process.env.MONGO_DB_NAME;
-  const uri = `mongodb+srv://${dbUser}:${dbPass}@${dbHost}/${dbName}`;
-
-  mongoose.connect(uri, { useNewUrlParser: true })
-    .then(() => {
-      console.log('Database connection successful');
-    })
-    .catch((err) => {
-      console.error('Database connection failed', err.stack);
-    });
+module.exports.connect = function () {
+  mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true })
+    .catch(err => logger.logError(err));
 };
 
-module.exports.getCommands = async function() {
-  let output = {};
-  const result = await models.CommandModel.find().exec();
-  for (let obj of result) {
-    output[obj.command] = obj.reply;
-  }
-  return output;
+module.exports.getCommands = async function () {
+  const commands = await models.Command.find().exec()
+    .catch(err => logger.logError(err));
+  
+  const formattedCommandOutput = {};
+  commands.forEach(command => formattedCommandOutput[command.command] = command.reply);
+  return formattedCommandOutput;
 };
 
-module.exports.getDynamicConfig = async function() {
-  let output = {};
-  const result = await models.DynamicConfigurationModel.find().exec();
-  for (let obj of result) {
-    // Creates an object as {categoryID: channelName} for easy reference
-    output[obj.categoryID] = obj.channelName;
-  }
-  return output;
+module.exports.getDynamicConfigs = async function () {
+  const configs = await models.DynamicConfiguration.find().exec()
+    .catch(err => logger.logError(err));
+  
+  const formattedConfigOutput = {};
+  configs.forEach(config => formattedConfigOutput[config.categoryID] = config.voiceChannelName);
+  return formattedConfigOutput;  
 };

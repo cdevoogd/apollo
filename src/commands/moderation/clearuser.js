@@ -1,66 +1,74 @@
-/**
- * Command - !clearuser
- * Usage: !clear [@member/userID] [messageCount]
- */
+const CommandBase = require('../CommandBase');
+const logger = require('../../internal/logger');
+const moderationLogging = require('../../internal/moderation-logging');
 
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const moderationLogging = require('../../helpers/moderationLogging');
-const staffChecks = require('../../helpers/staffChecks');
-
-module.exports.exec = async function (message) {
-  const splitMessageContent = message.content.split(' ').filter(word => word !== '');
-  // Command Parameters
-  const clearMember = message.mentions.members.first() || message.guild.members.get(splitMessageContent[1]);
-  const clearCount = parseInt(splitMessageContent[2]);
-  const maxCount = 100;
-  const minCount = 2;
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.clearuser.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) { 
-    return; 
-  }
-
-  if (!splitMessageContent[1]) { 
-    commandHelp.sendHelpEmbed(message.channel, 'clearuser'); 
-    return; 
-  }
-
-  if (!clearMember) { 
-    commandHelp.sendInvalidArgument(message.channel, 'clearuser', 'member'); 
-    return; 
-  }
-
-  if (isNaN(clearCount)) { 
-    commandHelp.sendInvalidArgument(message.channel, 'clearuser', 'messageCount'); 
-    return; 
-  }
-
-  if (clearCount > maxCount) { 
-    commandHelp.sendMaxExceeded(message.channel, 'clearuser', 'messageCount'); 
-    return; 
-  }
-
-  if (clearCount < minCount) { 
-    commandHelp.sendMinUnmet(message.channel, 'clearuser', 'messageCount'); 
-    return; 
-  }
-
-  // SECTION Command Execution
-  message.delete();
-  const messages = await message.channel.fetchMessages();
-  const messageCollection = messages.filter(msg => msg.author.id === clearMember.id);
-  const messageArray = messageCollection.array();
-  let messagesToDelete;
-
-  (clearCount < messageArray.length) ? messagesToDelete = messageArray.slice(0, clearCount + 1) : messagesToDelete = messageArray;
-  message.channel.bulkDelete(messagesToDelete);
-  moderationLogging.logClearUser(message, clearCount, clearMember);
-  message.channel.send(`${clearCount} messages deleted.`)
-    .then(message => {
-      // Delete after 3 seconds
-      setTimeout(() => { message.delete(); }, 3000);
-    });
+module.exports.info = {
+  name: 'clearuser',
+  description: 'Deletes a specified number of messages from a specific user on the server.',
+  usage: 'clearuser [@member/userID] [messageCount]',
+  note: 'Restrictions: Only messages less than two weeks old can be deleted, Message count must be between 2-100'
 };
+
+module.exports.exec = function (message) {
+  const command = new ClearUserCommand(message, exports.info);
+  command.process();
+};
+
+class ClearUserCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.member = message.mentions.members.first() || message.guild.members.get(this.arguments[0]);
+    this.messageCount = parseInt(this.arguments[1]);
+  }
+
+  async process () {
+    if (!this.validate()) { return; }
+
+    const messages = await this.message.channel.fetchMessages()
+      .then(msgs => msgs.filter(msg => msg.author.id === this.member.id).array())
+      .catch(err => logger.logError(err));
+
+    const messagesToDelete = (this.messageCount < messages.length) ? messages.slice(0, this.messageCount + 1) : messages;
+
+    // Deleting the command call so that the messageCount is accurate.
+    await this.message.delete();
+    this.message.channel.bulkDelete(messagesToDelete);
+    moderationLogging.logClearUser(this.message, this.member, this.messageCount);
+    // Delete this message after 3 seconds.
+    this.say(`${this.messageCount} messages deleted.`)
+      .then(message => { setTimeout(() => { message.delete(); }, 3000); })
+      .catch(err => logger.logError(err));
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.arguments[0]) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    if (!this.member) {
+      this.sendInvalidArgument('member');
+      return false;
+    }
+
+    if (Number.isNaN(this.messageCount)) {
+      this.sendInvalidArgument('messageCount');
+      return false;
+    }
+
+    if (this.messageCount < this.clearMinimum) {
+      this.sendMinimumUnmet('messageCount');
+      return false;
+    }
+
+    if (this.messageCount > this.clearMaximum) {
+      this.sendMaximumExceeded('messageCount');
+      return false;
+    }
+
+    return true;
+  }
+}

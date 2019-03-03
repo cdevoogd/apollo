@@ -1,64 +1,70 @@
-/**
- * Command - !adddynamic
- * Usage: !adddynamic [categoryID] [voiceChannelname]
- */
+const cache = require('../../internal/cache');
+const CommandBase = require('../CommandBase');
+const { DynamicConfiguration } = require('../../database');
+const logger = require('../../internal/logger');
 
-const apollo = require('../../apollo');
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const models = require('../../database/models');
-const staffChecks = require('../../helpers/staffChecks');
-const DynamicConfigurationModel = models.DynamicConfigurationModel;
-
-module.exports.exec = async function(message) {
-  const splitMessageContent = message.content.split(' ');
-  // Command Parameters
-  const dynamicCategoryID = splitMessageContent[1];
-  const dynamicChannelName = splitMessageContent.slice(2).join(' ');
-  const guildCategory = message.guild.channels.get(dynamicCategoryID);
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.adddynamic.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) { 
-    return; 
-  }
-  
-  if (!dynamicCategoryID) { 
-    commandHelp.sendHelpEmbed(message.channel, 'adddynamic'); 
-    return; 
-  }
-
-  if (!dynamicChannelName) { 
-    commandHelp.sendMissingArgument(message.channel, 'adddynamic', 'voiceChannelName'); 
-    return;
-  }
-
-  if (!guildCategory) { 
-    message.channel.send(`${dynamicCategoryID} is not a valid category in this server.`); 
-    return; 
-  }
-
-  // SECTION Command Execution
-  const document = await DynamicConfigurationModel.findOne({ categoryID: dynamicCategoryID }).exec();
-
-  if (document === null) {
-    const createdDocument = await createDynamicConfiguration(dynamicCategoryID, dynamicChannelName);
-    console.log(`Dynamic configuration added: \`[Category: ${createdDocument.categoryID}/${guildCategory.name}, Document ID: ${createdDocument._id}]\``);
-    message.channel.send(`Dynamic configuration added! [${createdDocument.categoryID}/${guildCategory.name}]`);
-  } else {
-    message.channel.send(`Configuration for \`${dynamicCategoryID}/${guildCategory.name}\` already exists.`);
-  }
+module.exports.info = {
+  name: 'adddynamic',
+  description: 'Used to add dynamic category configurations to the database.',
+  usage: 'adddynamic [categoryID] [voiceChannelName]'
 };
 
-async function createDynamicConfiguration(dynamicCategoryID, dynamicVoiceChannelName) {
-  const newConfiguration = new DynamicConfigurationModel({
-    categoryID: dynamicCategoryID,
-    channelName: dynamicVoiceChannelName
-  });
+module.exports.exec = function (message) {
+  const command = new AddDynamicCommand(message, exports.info);
+  command.process();
+};
 
-  const configDocument = await newConfiguration.save();
-  // Update Cache
-  apollo.cacheDynamicInfo();
-  return configDocument;
+class AddDynamicCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.categoryID = this.arguments[0];
+    this.voiceChannelName = this.arguments.slice(1).join(' ');
+    this.category = message.guild.channels.get(this.categoryID);
+  }
+
+  async process () {
+    if (!this.validate()) { return; }
+    const document = await DynamicConfiguration.findOne({ categoryID: this.categoryID }).exec();
+
+    if (document === null) {
+      await this.writeNewConfiguration();
+      cache.cacheDynamicConfigs();
+      logger.logInfo(`Dynamic configuration added: [Category: ${this.category.name}, ID: ${this.categoryID}]`);
+      this.say('Configuration added.');
+    } else {
+      this.say(`Configuration for ${this.category.name} already exists.`);
+    }
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.categoryID) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    if (!this.voiceChannelName) {
+      this.sendMissingArgument('voiceChannelName');
+      return false;
+    }
+
+    if (!this.category) {
+      this.say(`${this.categoryID} is not a valid category in this server.`);
+      return false;
+    }
+
+    return true;
+  }
+
+  writeNewConfiguration () {
+    const config = new DynamicConfiguration({
+      categoryID: this.categoryID,
+      categoryName: this.category.name,
+      voiceChannelName: this.voiceChannelName
+    });
+
+    config.save();
+  }
 }

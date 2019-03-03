@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
 
-module.exports.CommandModel = mongoose.model('command', {
-  command: String, 
+module.exports.Command = mongoose.model('command', {
+  command: String,
   reply: String
 });
 
-module.exports.StaffIDModel = mongoose.model('config', {
-  staffIDs: []
-});
-
-module.exports.DynamicConfigurationModel = mongoose.model('dynamic', {
+module.exports.DynamicConfiguration = mongoose.model('dynamic-config', {
   categoryID: String,
-  channelName: String
+  categoryName: String,
+  voiceChannelName: String
 });

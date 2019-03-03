@@ -1,12 +1,5 @@
-.DS_Store
-
-.env
-
-.vscode
-
+.*
+!.eslintrc.json
+!.gitignore
+config.js
 node_modules
-
-src/config.js
-
-
-

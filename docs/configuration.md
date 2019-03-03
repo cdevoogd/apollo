@@ -1,41 +1,24 @@
-# Apollo - Configuration
+# Apollo Configuration
 ## .env
 Apollo uses a `.env` file to contain his Discord access token and MongoDB connection information.
 Create a `.env` file inside of the main `apollo` directory with the following keys:
-```
-ACCESS_TOKEN=
-PASTEE_TOKEN=
-MONGO_HOST=
-MONGO_DB_NAME=
-MONGO_USER=
-MONGO_PASS=
+```shell
+DISCORD_TOKEN="discord_token_here"
+MONGO_URL="mongo_connection_url_here"
+PASTEE_TOKEN="paste.ee_api_token_here"
 ```
 
-`ACCESS_TOKEN` is where you will need to put the bot’s access token for Discord. This can be found in the [Discord Developer Dashboard](https://discordapp.com/developers/applications/).
+### `DISCORD_TOKEN`
+This where you will need to put the bot’s access token for Discord. This can be found in the [Discord Developer Dashboard](https://discordapp.com/developers/applications/).
 
-`PASTEE_TOKEN` is an API access token to [paste.ee](https://paste.ee/). This token is used to create logs of bulk message deletions, as they will not fit into a Discord message.
- You can get a token for this site simply by registering.
+### `MONGO_URL`
+This is where you will put the **full connection string** for your Mongo DB database, including passwords and database names.
 
-The other keys are where your MongoDB connection information is stored.
-`MONGO_USER` and `MONGO_PASS` are your username and password used to authenticate with the database.
-`MONGO_DB_NAME` is the name of the database that Apollo should connect to and work with.
-`MONGO_HOST` is the host for your Mongo database. This will be the string between the `@` and `/` in your connection string.
+### `PASTEE_TOKEN`
+This is where you will put your API access token to [paste.ee](https://paste.ee/). 
+This token is used to create logs of bulk message deletions, as they will not fit into a Discord message.
 
-For example:
-```
-mongodb+srv://<USERNAME>:<PASSWORD>@cluster-name-fcgnw.gcp.mongodb.net/test?retryWrites=true
-```
-Our host would be `cluster-name-fcgnw.gcp.mongodb.net`.
-
-Finally, your `.env` file should look something like this:
-```
-ACCESS_TOKEN=8u98a0wid09aiwdiscord-access-token92daw8dua9
-MONGO_HOST=cluster-name-fcgnw.gcp.mongodb.net
-MONGO_DB_NAME=apollo
-MONGO_USER=apolloUser
-MONGO_PASS=apolloPassword
-```
-
+You can get a token for this site simply by registering.
 
 ## config.js
 Apollo uses a `config.js` file inside of the `src` directory for configuration of the bot and commands. Provided is a `config-example.js` file. Feel free to rename this to `config.js`, and customize it to your liking.
@@ -43,24 +26,29 @@ Apollo uses a `config.js` file inside of the `src` directory for configuration o
 ### Options
 
 #### `enabled`
- `true` or `false`
-Enables that command or feature
+`true` or `false`
+
+Enables or disables that command/feature
 
 #### `channelID`
-This channel ID is used to specify where to send certain logs/messages.
+This is where you will put the channel ID to send messages to for that configuration option.
 
-#### `adminRoleID`
-This is the ID of an administrator role. This role is what is able to access commands with the `admin` access level.
+#### `adminRoleIDs`
+This array contains all of the admin role IDs. These IDs are able to use commands with the `admin` access level.
 
 #### `staffRoleIDs`
-This array can contain multiple role IDs for different roles considered staff.  These roles are what are able to access commands with the `staff` access level.
+This array contains all of the staff role IDs. These roles are able to use commands with the `staff` access level. 
+
+**Note:** You will want to add the roles inside of `adminRoleIDs` to this array as well.
 
 #### `accessLevel`
 `'admin'` or `’staff'`
+
 Used to specify which level of staff has access to that particular command. 
-`admin` = adminRoleID
+
+`admin` = adminRoleIDs
+
 `staff` = staffRoleIDs
 
-#### commandChannelOnly
-Should this command only be available in the specified `botCommandsChannel`.
-Currently this is an option on the *!lock* and *!unlock* commands to prevent spam throughout the server.
+#### `commandChannelOnly`
+Specifies whether or not this command is required to be used in the channel specified by the `botCommandsChannelName` option.

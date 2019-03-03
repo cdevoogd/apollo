@@ -1,41 +1,47 @@
-/**
- * Command - !delcommand
- * Usage: !delcommand [command]
- */
+const cache = require('../../internal/cache');
+const CommandBase = require('../CommandBase');
+const { Command } = require('../../database');
+const logger = require('../../internal/logger');
 
-const apollo = require('../../apollo');
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const models = require('../../database/models');
-const staffChecks = require('../../helpers/staffChecks');
-const CommandModel = models.CommandModel;
-
-module.exports.exec = async function(message) {
-  const splitMessageContent = message.content.split(' ');
-  // Command Parameters
-  const commandToDelete = splitMessageContent[1];
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.delcommand.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) { 
-    return; 
-  }
-
-  if (!commandToDelete) { 
-    commandHelp.sendHelpEmbed(message.channel, 'delcommand'); 
-    return; 
-  }
-
-  // SECTION Command Execution
-  const document = await CommandModel.findOneAndDelete({ command: commandToDelete });
-  if (document === null) {
-    message.channel.send('Command not found.');
-  } else {
-    // Update the cache
-    apollo.cacheCommands();
-    // Log deletion
-    console.log(`Command deleted: [Command: ${commandToDelete}, Document ID: ${document._id}]`);
-    message.channel.send(`Command \`${commandToDelete}\` deleted!`);
-  }
+module.exports.info = {
+  name: 'delcommand',
+  description: 'Used to delete custom commands from the server.',
+  usage: 'delcommand [command]'
 };
+
+module.exports.exec = function (message) {
+  const command = new DelCommand(message, exports.info);
+  command.process();
+};
+
+class DelCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.commandName = this.arguments[0];
+  }
+
+  async process () {
+    if (!this.validate()) { return; }
+
+    const document = await Command.findOneAndDelete({ command: this.commandName }).exec();
+    if (document === null) {
+      this.say('Command not found.');
+    } else {
+      cache.cacheCommands();
+      logger.logInfo(`Command deleted: [Command: ${this.commandName}]`);
+      this.say('Command deleted.');
+    }
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.commandName) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    return true;
+  }
+}

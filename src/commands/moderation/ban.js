@@ -1,58 +1,65 @@
-/**
- * Command - !ban
- * Usage: !ban [@member/userID] [reason]
- */
+const CommandBase = require('../CommandBase');
+const logger = require('../../internal/logger');
+const moderationLogging = require('../../internal/moderation-logging');
 
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const moderationLogging = require('../../helpers/moderationLogging');
-const staffChecks = require('../../helpers/staffChecks');
-
-module.exports.exec = async function(message) {
-  const splitMessageContent = message.content.split(' ').filter(word => word !== '');
-  // Command Parameters
-  const banMember = message.mentions.members.first() || message.guild.members.get(splitMessageContent[1]);
-  const banReason = splitMessageContent.slice(2).join(' ');
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.ban.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) { 
-    return; 
-  }
-
-  if (!splitMessageContent[1]) { 
-    commandHelp.sendHelpEmbed(message.channel, 'ban'); 
-    return; 
-  }
-
-  if (!banMember) { 
-    commandHelp.sendInvalidArgument(message.channel, 'ban', 'member'); 
-    return; 
-  }
-
-  if (banMember.user.bot) { 
-    commandHelp.sendMemberIsBot(message.channel); 
-    return; 
-  }
-
-  if (!banReason) { 
-    commandHelp.sendMissingArgument(message.channel, 'ban', 'reason'); 
-    return; 
-  }
-
-  if (staffChecks.isMemberStaff(banMember)) { 
-    commandHelp.sendMemberIsStaff(message.channel); 
-    return; 
-  }
-
-  if (!banMember.bannable) { 
-    commandHelp.sendMemberUnbannable(message.channel); 
-    return; 
-  }
-
-  // SECTION Command Execution
-  await banMember.ban(banReason);
-  message.react('🔨');
-  moderationLogging.logBan(message, banMember, banReason);
+module.exports.info = {
+  name: 'ban',
+  description: 'Bans the specified member from the server.',
+  usage: 'ban [@member/userID] [reason]'
 };
+
+module.exports.exec = function (message) {
+  const command = new BanCommand(message, exports.info);
+  command.process();
+};
+
+class BanCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.member = message.mentions.members.first() || message.guild.members.get(this.arguments[0]);
+    this.reason = this.arguments.slice(1).join(' ');
+  }
+
+  process () {
+    if (!this.validate()) { return; }
+
+    this.member.ban(this.reason)
+      .then(() => {
+        this.message.react('🔨');
+        moderationLogging.logBan(this.message, this.member, this.reason);
+      })
+      .catch(err => logger.logError(err));
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.arguments[0]) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    if (!this.member) {
+      this.sendInvalidArgument('member');
+      return false;
+    }
+
+    if (!this.reason) {
+      this.sendMissingArgument('reason');
+      return false;
+    }
+
+    if (this.member.user.bot) {
+      this.sendBotWarning();
+      return false;
+    }
+
+    if (!this.member.bannable) {
+      this.sendMemberUnbannable();
+      return false;
+    }
+
+    return true;
+  }
+}

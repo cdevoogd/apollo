@@ -1,41 +1,47 @@
-/**
- * Command - !deldynamic
- * Usage: !deldynamic [categoryID]
- */
+const cache = require('../../internal/cache');
+const CommandBase = require('../CommandBase');
+const { DynamicConfiguration } = require('../../database');
+const logger = require('../../internal/logger');
 
-const apollo = require('../../apollo');
-const config = require('../../config');
-const commandHelp = require('../../helpers/commandHelp');
-const models = require('../../database/models');
-const staffChecks = require('../../helpers/staffChecks');
-const DynamicConfigurationModel = models.DynamicConfigurationModel;
-
-module.exports.exec = async function(message) {
-  const splitMessageContent = message.content.split(' ');
-  // Command Parameters
-  const dynamicCategoryID = splitMessageContent[1];
-  // Message Author Eligibility
-  const messageAuthorIsEligible = staffChecks.checkEligibilityUsingAccessLevel(message.member, config.commands.deldynamic.accessLevel);
-  
-  // SECTION Argument Checks
-  if (!messageAuthorIsEligible) { 
-    return; 
-  }
-  if (!dynamicCategoryID) { 
-    commandHelp.sendHelpEmbed(message.channel, 'deldynamic'); 
-    return; 
-  }
-
-  // SECTION Command Execution
-  const document = await DynamicConfigurationModel.findOneAndDelete({ categoryID: dynamicCategoryID });
-
-  if (document === null) {
-    message.channel.send(`Configuration for \`${dynamicCategoryID}\` not found.`);
-  } else {
-    // Update Cache
-    apollo.cacheDynamicInfo();
-    // Log deletion
-    console.log(`Dynamic configuration deleted: [Category: ${dynamicCategoryID}, Document ID: ${document._id}]`);
-    message.channel.send('Dynamic configuration deleted!');
-  }
+module.exports.info = {
+  name: 'deldynamic',
+  description: 'Used to delete dynamic category configurations to the database.',
+  usage: 'deldynamic [categoryID]'
 };
+
+module.exports.exec = function (message) {
+  const command = new DelDynamicCommand(message, exports.info);
+  command.process();
+};
+
+class DelDynamicCommand extends CommandBase {
+  constructor (message, info) {
+    super(message, info);
+
+    this.categoryID = this.arguments[0];
+  }
+
+  async process () {
+    if (!this.validate()) { return; }
+
+    const document = await DynamicConfiguration.findOneAndDelete({ categoryID: this.categoryID });
+    if (document === null) {
+      this.say(`Configuration for ${this.categoryID} not found.`);
+    } else {
+      cache.cacheDynamicConfigs();
+      logger.logInfo(`Dynamic configuration removed: [ID: ${this.categoryID}]`);
+      this.say('Configuration deleted.');
+    }
+  }
+
+  validate () {
+    if (!this.authorIsEligible) { return false; }
+
+    if (!this.categoryID) {
+      this.sendHelpEmbed();
+      return false;
+    }
+
+    return true;
+  }
+}
