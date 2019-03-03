@@ -5,6 +5,7 @@ module.exports = {
   imageDeletedEmbed: '#5fd67e',
   embedDeletedEmbed: '#615fd6',
   messageDeletedEmbed: '#5f89d6',
+  messageDeletedBulkEmbed: '#fc9535',
   // Moderation Log Colors
   ban: '#ff3e33',
   clear: '#fbff33',
