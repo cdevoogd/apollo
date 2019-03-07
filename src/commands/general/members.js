@@ -1,4 +1,5 @@
 const CommandBase = require('../CommandBase');
+const logger = require('../../internal/logger');
 
 module.exports.info = {
   name: 'members',
@@ -17,7 +18,9 @@ class MembersCommand extends CommandBase {
   }
 
   process () {
-    // Using members.size here instead of memberCount to keep it accurate w/o having to restart bot.
-    this.say(this.message.guild.members.size);
+    // Using fetchMembers() instead of memberCount to stay accurate without having to restart the bot.
+    this.message.guild.fetchMembers()
+      .then(guild => this.say(guild.members.size))
+      .catch(err => logger.logError(err));
   }
 }
