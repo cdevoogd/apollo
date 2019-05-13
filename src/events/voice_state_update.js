@@ -5,8 +5,8 @@
  * This module handles the dynamic voice channel functionality
  */
 
-const cache = require('../internal/cache');
-const logger = require('../internal/logger');
+const cache = require('../core/cache');
+const logger = require('../core/logger');
 
 module.exports.process = async function (memberBefore, memberAfter) {
   const dynamicConfigs = await cache.getDynamicConfigs();
@@ -23,7 +23,7 @@ module.exports.process = async function (memberBefore, memberAfter) {
   if (after.voiceChannel && after.isChannelDynamic()) {
     if (after.isMemberNthChannelMember(1)) {
       after.deleteExtraChannels();
-      after.reservedChannel ? after.resetReservedChannel() : after.createNewChannel();
+      if (!after.reservedChannel) { after.createNewChannel(); }
     }
   }
 };
@@ -54,22 +54,17 @@ class VoiceStateUpdate {
   }
 
   resetReservedChannel () {
-    // Moves the extra channel to the end of the category
-    this.reservedChannel.setPosition(this.reservedChannel.parent.children.size - 1)
-      .catch(err => logger.logError(err));
-    
-    // Make sure the channel is unlocked
-    if (this.reservedChannel.permissionsFor(this.roleEveryone).toArray().includes('CONNECT')) { return; }
-
-    this.reservedChannel.overwritePermissions(this.roleEveryone, { CONNECT: null })
-      .then(channel => channel.edit({ name: this.dynamicConfigs[channel.parentID] }))
-      .catch(err => logger.logError(err));
+    // Instead of resetting permissions and messing with the finicky positioning system in Discord, I am just deleting and remaking the channel.
+    // This makes sure that it is unlocked, and at the bottom of the category at all times.
+    this.reservedChannel.delete();
+    this.createNewChannel();
   }
 
   createNewChannel () {
-    this.member.guild.createChannel(this.dynamicConfigs[this.voiceChannel.parentID], 'voice', [{ id: this.roleEveryone, denied: ['VIEW_CHANNEL'] }])
-      .then(channel => channel.setParent(this.voiceChannel.parentID))
-      .then(channel => channel.overwritePermissions(this.roleEveryone, { VIEW_CHANNEL: true }))
+    this.member.guild.createChannel(this.dynamicConfigs[this.voiceChannel.parentID], {
+      type: 'voice',
+      parent: this.voiceChannel.parentID
+    })
       .catch(err => logger.logError(err));
   }
 }

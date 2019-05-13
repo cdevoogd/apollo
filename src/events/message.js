@@ -5,7 +5,7 @@
  * This module checks messages for commands, and redirects them to be processed if found.
  */
 
-const cache = require('../internal/cache');
+const cache = require('../core/cache');
 const commands = require('../commands');
 const config = require('../config');
 

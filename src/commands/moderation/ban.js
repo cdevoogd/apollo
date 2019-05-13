@@ -1,6 +1,6 @@
 const CommandBase = require('../CommandBase');
-const logger = require('../../internal/logger');
-const moderationLogging = require('../../internal/moderation-logging');
+const logger = require('../../core/logger');
+const moderationLogging = require('../../core/moderation-logging');
 
 module.exports.info = {
   name: 'ban',

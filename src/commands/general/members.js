@@ -1,5 +1,5 @@
 const CommandBase = require('../CommandBase');
-const logger = require('../../internal/logger');
+const logger = require('../../core/logger');
 
 module.exports.info = {
   name: 'members',

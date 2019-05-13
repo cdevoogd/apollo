@@ -1,7 +1,7 @@
-const colors = require('../internal/colors');
+const colors = require('../core/colors');
 const config = require('../config');
 const Discord = require('discord.js');
-const staffChecks = require('../internal/staff-checks');
+const staffChecks = require('../core/staff-checks');
 
 module.exports = class Command {
   constructor (message, info) {

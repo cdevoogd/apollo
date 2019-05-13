@@ -1,9 +1,9 @@
-const cache = require('../../internal/cache');
+const cache = require('../../core/cache');
 const CommandBase = require('../CommandBase');
 const commands = require('../../commands');
 const config = require('../../config');
-const logger = require('../../internal/logger');
-const staffChecks = require('../../internal/staff-checks');
+const logger = require('../../core/logger');
+const staffChecks = require('../../core/staff-checks');
 
 module.exports.info = {
   name: 'help',
@@ -56,7 +56,7 @@ class HelpCommand extends CommandBase {
 
     formattedMessage.push(boldUnderline('Standard Commands'));
     for (const command in commands) {
-      if (!accessLevels.includes(config.commands[command].accessLevel)) { continue; } 
+      if (!accessLevels.includes(config.commands[command].accessLevel)) { continue; }
       formattedMessage.push(`${inlineCode(this.prefix + command)} - ${commands[command].info.description}`);
     }
 
