@@ -1,7 +1,7 @@
-const cache = require('../../internal/cache');
+const cache = require('../../core/cache');
 const CommandBase = require('../CommandBase');
 const config = require('../../config');
-const logger = require('../../internal/logger');
+const logger = require('../../core/logger');
 
 module.exports.info = {
   name: 'lock',

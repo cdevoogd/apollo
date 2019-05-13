@@ -6,10 +6,10 @@
  */
 
 require('dotenv').config();
-const colors = require('../internal/colors');
+const colors = require('../core/colors');
 const config = require('../config');
 const Discord = require('discord.js');
-const logger = require('../internal/logger');
+const logger = require('../core/logger');
 const request = require('request');
 
 module.exports.process = function (messages) {
@@ -37,7 +37,7 @@ module.exports.process = function (messages) {
 
     const paste = JSON.parse(body);
     const logChannel = messages.first().guild.channels.get(config.logMessageDeleted.channelID);
-    
+
     const logEmbed = new Discord.RichEmbed()
       .setColor(colors.messageDeletedBulkEmbed)
       .setTitle('Bulk Message Deletion Log')

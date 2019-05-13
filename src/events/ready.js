@@ -5,7 +5,7 @@
  * Currently, this event just prints bot information to the console and sets the bot's presence.
  */
 
-const logger = require('../internal/logger');
+const logger = require('../core/logger');
 
 module.exports.process = async function (client) {
   const currentTime = new Date();

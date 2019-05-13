@@ -5,8 +5,8 @@
  * This module handles the dynamic voice channel functionality
  */
 
-const cache = require('../internal/cache');
-const logger = require('../internal/logger');
+const cache = require('../core/cache');
+const logger = require('../core/logger');
 
 module.exports.process = async function (memberBefore, memberAfter) {
   const dynamicConfigs = await cache.getDynamicConfigs();
@@ -57,7 +57,7 @@ class VoiceStateUpdate {
     // Moves the extra channel to the end of the category
     this.reservedChannel.setPosition(this.reservedChannel.parent.children.size - 1)
       .catch(err => logger.logError(err));
-    
+
     // Make sure the channel is unlocked
     if (this.reservedChannel.permissionsFor(this.roleEveryone).toArray().includes('CONNECT')) { return; }
 

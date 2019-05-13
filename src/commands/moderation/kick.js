@@ -1,6 +1,6 @@
 const CommandBase = require('../CommandBase');
-const logger = require('../../internal/logger');
-const moderationLogging = require('../../internal/moderation-logging');
+const logger = require('../../core/logger');
+const moderationLogging = require('../../core/moderation-logging');
 
 module.exports.info = {
   name: 'kick',
@@ -24,7 +24,7 @@ class KickCommand extends CommandBase {
   process () {
     if (!this.validate()) { return; }
 
-    this.member.kick(this.reason) 
+    this.member.kick(this.reason)
       .then(() => {
         this.message.react('✅');
         moderationLogging.logKick(this.message, this.member, this.reason);
@@ -53,7 +53,7 @@ class KickCommand extends CommandBase {
     if (this.member.user.bot) {
       this.sendBotWarning();
       return false;
-    } 
+    }
 
     if (!this.member.kickable) {
       this.sendMemberUnkickable();

@@ -5,11 +5,11 @@
  * This module (if enabled) logs deleted messages for use by staff
  */
 
-const colors = require('../internal/colors');
+const colors = require('../core/colors');
 const commands = require('../commands');
 const config = require('../config');
 const Discord = require('discord.js');
-const logger = require('../internal/logger');
+const logger = require('../core/logger');
 
 module.exports.process = function (client, message) {
   const event = new MessageDeleteEvent(client, message);
@@ -34,7 +34,7 @@ class MessageDeleteEvent {
       // Stop bot from logging deleted command calls (Stops logging when he deletes !report, !clear, etc.)
       if (commands.hasOwnProperty(this.messageContent.slice(1).split(' ')[0])) { return false; }
     }
-    
+
     return true;
   }
 
@@ -42,14 +42,14 @@ class MessageDeleteEvent {
     if (this.message.attachments.size === 1) {
       this.logImageDeletion();
       return;
-    } 
-    
-    if (this.message.embeds.length === 1) { 
+    }
+
+    if (this.message.embeds.length === 1) {
       this.logEmbedDeletion();
       return;
     }
 
-    this.logMessageDeletion(); 
+    this.logMessageDeletion();
   }
 
   logImageDeletion () {
@@ -103,7 +103,7 @@ class MessageDeleteEvent {
       }
     }
   }
-  
+
   logMessageDeletion () {
     // This is only being checked here because we want the bot's embeds to be logged, but not regular messages.
     if (this.message.author === this.client.user) { return; }
@@ -120,7 +120,7 @@ class MessageDeleteEvent {
         .addField('Message:', this.message.cleanContent)
         .addField('Message Edits (Includes Original):', this.message.edits)
         .addField('Time Sent:', this.message.createdAt);
-      
+
       this.logChannel.send({ embed: logEmbed });
     }
     catch (error) {
