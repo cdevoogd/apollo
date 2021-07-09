@@ -2,6 +2,7 @@
 .*
 
 # Some dotfiles are important to commit
+!.deepsource.toml
 !.gitignore
 !.gitattributes
 !.github
