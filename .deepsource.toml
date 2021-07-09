@@ -1,0 +1,25 @@
+version = 1
+
+test_patterns = [
+    "test/**",
+    "**/*_test.go"
+]
+
+[[analyzers]]
+name = "docker"
+enabled = true
+
+[[analyzers]]
+name = "go"
+enabled = true
+
+  [analyzers.meta]
+  import_root = "github.com/cdevoogd/apollo"
+
+[[analyzers]]
+name = "secrets"
+enabled = true
+
+[[analyzers]]
+name = "sql"
+enabled = true
