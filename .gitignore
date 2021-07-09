@@ -1,5 +1,10 @@
+# Because dotfiles tend to contain machine-specific or even sensitive information, ignore them by default.
 .*
-!.eslintrc.json
+
+# Some dotfiles are important to commit
 !.gitignore
-config.js
-node_modules
+!.gitattributes
+!.github
+
+# Logs and databases
+*.log
