@@ -3,6 +3,7 @@
 
 # Some dotfiles are important to commit
 !.deepsource.toml
+!.dockerignore
 !.gitignore
 !.gitattributes
 !.github

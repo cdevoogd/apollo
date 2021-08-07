@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  apollo:
+    container_name: apollo
+    image: apollo
+    environment:
+      - DISCORD_API_TOKEN
