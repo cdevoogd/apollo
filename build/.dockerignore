@@ -3,4 +3,5 @@
 go.mod
 go.sum
 
-cmd/*.go
+main.go
+internal/*.go
