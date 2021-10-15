@@ -11,7 +11,7 @@ COPY . .
 FROM base as build
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    GOOS=linux go build -o /src/out/apollo /src/cmd/apollo/main.go
+    GOOS=linux go build -o /src/out/apollo .
 
 FROM base AS unit-test
 RUN --mount=type=cache,target=/go/pkg/mod \

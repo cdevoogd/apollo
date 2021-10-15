@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   apollo:
     container_name: apollo

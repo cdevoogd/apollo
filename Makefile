@@ -14,3 +14,7 @@ apollo: ## Build Apollo within a container. This is the default target.
 .PHONY: test
 test: ## Run unit tests within a container
 	DOCKER_BUILDKIT=1 docker build -f $(DOCKERFILE) . --target unit-test
+
+.PHONY: clean
+clean: ## Clean up dangling docker images
+	docker rmi $(shell docker images -f dangling=true -q)
